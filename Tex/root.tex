@@ -1,0 +1,112 @@
+% This template was originally by R. Jacob Vogelstein
+% Updated on March 1, 2010 by Noah J. Cowan
+
+
+\documentclass[12pt,oneside,final]{thesis}
+
+\usepackage[superscript]{cite}
+\usepackage{amsmath,amsfonts}
+\usepackage{graphicx}
+\graphicspath{{./figs/}}
+\usepackage{fixltx2e}
+\usepackage{array}
+% wrapfig is fragile: use sparingly
+\usepackage{wrapfig} 
+%\usepackage{times}  % Use this for ugly fonts
+
+\usepackage{upgreek}
+\usepackage{hyperref}
+\usepackage{setspace}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage[font=singlespacing, labelfont=bf]{caption}
+%\usepackage{CV}
+
+\usepackage{enumitem}
+\newlist{inlinelist}{enumerate*}{1}
+\setlist*[inlinelist,1]{%
+  label=(\arabic*),
+}
+
+\usepackage{fancyhdr}    % Use nice looking headers along with the required footer page numbers   
+%\usepackage[hypertex]{hyperref}
+
+%Define the header/footer style
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lhead{\leftmark}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{% Redefine ``plain'' style for chapter boundaries
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\thepage} % except the center
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%\tolerance=10000
+
+
+\usepackage{theorem}
+\newtheorem{fact}{Fact}[section]
+\newtheorem{lemma}[fact]{Lemma}
+\newtheorem{theorem}[fact]{Theorem}
+\newtheorem{definition}[fact]{Definition}
+\newtheorem{corollary}[fact]{Corollary}
+\newtheorem{proposition}[fact]{Proposition}
+\newtheorem{example}[fact]{Example}
+\newtheorem{claim}[fact]{Claim}
+\newtheorem{exercise}[fact]{Exercise}
+\newtheorem{remark}[fact]{Remark}
+\newenvironment{proof}{{\bf Proof:  }}{\hfill\rule{2mm}{2mm}}
+\newcommand{\Ex}{\mathbb{E}}
+\usepackage[authoryear, sort]{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+
+\usepackage{color}
+\newcommand{\RT}[1]{{\color{red}RT: #1}}
+
+
+
+
+%\makeglossary % enable the glossary
+
+\begin{document}
+
+\title{To be determined}
+\author{Runze Tang}
+\degreemonth{July}
+\degreeyear{2017} 
+\dissertation
+\doctorphilosophy
+\copyrightnotice
+
+
+% add your chapters, best way is to have separate TeX files for each chapter
+\include{chapter0}
+\include{chapter1}
+\include{chapter2}
+\include{chapter3}
+\include{chapter4}
+\include{chapter5}
+
+%\include{appendix}
+
+%% REFERENCES
+
+% if you use BIBTEX
+%\bibliography{Bib}
+%\bibliographystyle{plainnat}
+
+\def\newblock{\hskip .11em plus.33em minus.07em}
+\bibliographystyle{plainnat}
+\bibliography{Bib}
+
+\include{CV}
+
+\end{document}

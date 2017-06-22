@@ -32,7 +32,7 @@ For example, \citet{ginestet2014hypothesis} proposed a way to test if there is a
 While hypothesis testing is the end goal of their work, estimation is a key intermediate step which may be improved by accounting for underlying structure in the mean matrix. 
 Thus, improving the estimation procedures for the mean graph is not only important by itself, but also can be applied to help improve other statistical inference procedures.
 
-To better illustrate the idea, we take the CoRR brain graphs with Desikan atlases as an example. The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section \ref{sec:LLG_real_data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
+To better illustrate the idea, we take the CoRR brain graphs with Desikan atlases as an example. The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section~\ref{sec:LLG_real_data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
 
 
 \begin{figure}[!tbp]
@@ -544,7 +544,7 @@ However, overall these differences are nearly indistinguishable for unscaled rel
 
 
 
-\section{Corr Brain Graphs Experiment}
+\section{CoRR Brain Graphs Experiment}
 \label{sec:LLG_corr_data}
 
 In practice, graphs do not follow the independent edge model, let alone an RDPG or SBM, but the mean of a collection of graphs is still of interest for these cases.

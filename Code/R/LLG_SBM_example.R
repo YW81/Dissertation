@@ -1,5 +1,4 @@
 rm(list = ls())
-
 setwd("/Users/Runze/Documents/GitHub/Dissertation/Code/R")
 library(extrafont)
 set.seed(12345)
@@ -81,7 +80,7 @@ Phat[Phat>1]<- 1
 pdf("../../Figure/SBM_Abar.pdf", family="Times", width=4.53, height=4.4)
 levelplot(as.matrix(Abar[1:n,n:1]),col.regions=new.palette(20),xlab=list(cex=0),
           ylab=list(cex=0),scales=list(x=list(draw=FALSE),y=list(draw=FALSE)),
-          main=list(label="Element-wise mean (M=3)"),
+          main=list(label="Element-wise mean (m=3)"),
           at=myAt, colorkey=myCkey, lwd=0)
 dev.off()
 
@@ -89,6 +88,6 @@ dev.off()
 pdf("../../Figure/SBM_Phat.pdf", family="Times", width=4, height=4.4)
 levelplot(P_hat[1:n,n:1],col.regions=new.palette(20),xlab=list(cex=0),
           ylab=list(cex=0),scales=list(x=list(draw=FALSE),y=list(draw=FALSE)),
-          main=list(label="Rank-5 approximation (M=3)"),
+          main=list(label="Rank-5 approximation (m=3)"),
           at=myAt, colorkey=F, lwd=0)
 dev.off()

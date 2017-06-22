@@ -16,3 +16,5 @@
 *.gz
 
 *.toc
+
+*.graphml

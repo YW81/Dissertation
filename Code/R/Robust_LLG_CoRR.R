@@ -14,7 +14,7 @@ q <- 0.9
 isSVD <- 0
 isWeighted <- 1
 
-dMin <- 0
+dMin <- 6
 dMax <- Inf
 
 if (isSVD) {

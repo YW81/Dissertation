@@ -1,101 +1,38 @@
+%!TEX root = root.tex
+
 \chapter{Introduction}
-\label{sec:intro}
-\chaptermark{Optional running chapter heading}
+\label{chap:intro}
 
-Introduction.
+Estimation of graph parameters from multiple graphs is at the core of statistics.
+When considering unweighted graphs, it is equivalent to estimating the mean in many scenarios.
+The sample mean, motivated by the law of large numbers and the central limit theorem, has its place as one of the most important statistics for this task.
+In modern settings, we take averages almost everywhere, from data in Euclidean space to more complex objects like images, shapes, and documents.
+In this work we consider the challenges of estimating a population mean based on a sample of graphs, for example the human brains as represented by their structural connectomes. 
 
-A citation \cite{A}. 
-A citation without brackets \citen{B}. 
-Multiple citations \cite{A, B, C}.
+The mean of a population of graphs is a high dimensional object, consisting of $O(n^2)$ parameters for graphs with $n$ vertices.
+When the number of samples $m$ is much smaller than $n^2$, or even $n$, estimating such high dimensional estimands using naive unbiased methods often leads to inaccurate estimates with very high variance.
+Furthermore, using these estimates for subsequent inference tasks such as testing can lead to low power and accuracy.
+By exploiting a bias-variance trade-off, it is often fruitful to develop estimators which have some bias but greatly reduced variance.
+When these estimators are biased towards low-dimensional structures which well approximate the full dimensional population mean, major improvements can be realized \citep{trunk1979problem}.
 
-\section{Section}
-\label{sec:section}
+In a striking result, \citet{stein1956inadmissibility} and \citet{james1961estimation} showed that even the arithmetic mean can be dominated by another procedure.
+In particular, James and Stein showed that the sample mean for a multivariate normal distribution with at least three dimensions has strictly higher risk than a procedure that introduces shrinkage, and can be strictly improved by carefully biasing the  estimate towards any given fixed point. 
+Twenty-seven years later, \citet{gutmann1982stein} proved that this phenomenon cannot occur when the sample spaces are finite, as is the case for graphs.
+However, while there must be some cases where the sample mean is preferred, this does not mean that other estimators should not be considered.
+In many situations where other structural information is hypothesized, other estimators may be preferable.
 
-This is a section.  Here's a reference to a different section:
-\ref{sec:subsection}.
+In this work, we consider a series of random graph models, with a particular focus on the ones which assume that the connections depend on the hidden properties of the corresponding objects. By proposing a low-rank estimator, we are able to improve the performance of edge-wise sample mean.
 
-\subsection{Subsection}
-\label{sec:subsection}
+When we shift our focus to weighted graphs, the noisy edge observations are more likely to be a serious problem to estimation of graph parameters compared to unweighted graphs. As we know, the sample mean is notoriously un-robust to outliers;
+thus, under the possibility of contamination, it is wise to use robust methods, such as the ML$q$E \citep{ferrari2010maximum, qin2013maximum} considered in this paper.
 
-This is a subsection.
+To address this un-robust deficiency while keeping the improvement offered by the low-rank procedure, we propose an estimation methodology which is a natural extension of \citep{tang2016law} to gross error contamination. Our proposed estimator both inherits ML$q$E robustness and wins the bias-variance tradeoff by taking advantage of low-rank structure.
 
-% \begin{figure}[t]
-% \centering
-% \includegraphics[width=\textwidth]{figure}
-% \makeatletter
-% \let\@currsize\normalsize
-% \caption{Caption.}
-% \label{fig:figure}
-% \end{figure}
-% 
-% \begin{figure}[t]
-% \centering
-% \begin{tabular}{c c}
-% \includegraphics[height=2.5in]{figureA} &
-% \includegraphics[width=3in]{figureB}\\
-% (A) & (B)
-% \end{tabular}
-% \makeatletter
-% \let\@currsize\normalsize
-% \caption{Two figures.}
-% \label{fig:twofigures}
-% \end{figure}
-
-% currsize is not set in the long table environment, so we need to set it before we set it up.
-\makeatletter
-\let\@currsize\normalsize
-\makeatother
-
-% tabular environments are set to be single-spaced in the  thesis class,  but long tables do not use tabular
-% to get around this, set the spacing to single spacing at the start of the long table environment, and set it back to double-spacing at the end of it
-\ssp
-\begin{longtable}{cc}
-\caption[This is what I want to have in the LOT]{This is a caption.} \label{tab:pfams} \\
-\hline
-A & B \\
-\hline
-\endfirsthead
-\multicolumn{2}{@{}l}{\textbf{Table \thetable} \ldots continued} \\
-\hline
-A & B \\
-\hline
-\endhead
-a1 & b1 \\
-a2 & b2 \\
-a3 & b3 \\
-a4 & b4 \\
-\hline
-\end{longtable}
-\dsp
-
-\section[Optional table of contents heading]{Section with\\linebreaks in\\the
-name}
-
-This is another section.
-
-\subsection{Another subsection}
-
-\subsubsection{Subsubsection}
-
-\paragraph{Heading level below subsubsection}
-\label{sec:paragraph}
-
-And I quote: 
-%
-\begin{quote}
-La la la.
-\end{quote}
-%
-\noindent No ident after end of quote.  
-
-Another paragraph with a list:
-%
+We organize the work as follows.
 \begin{itemize}
-%  
-\item Item 1
-%
-\item Item 2
-%
+\item {\bf{Chapter 1}} We introduce the estimation problem and give an overview of this work.
+\item {\bf{Chapter 2}} A series of models for a single random graph are introduced. These important components will not only lead to our model for a collection of graphs but also motivate our estimators later.
+\item {\bf{Chapter 3}} For multiple unweighted graphs, we propose using a low-rank method together with tools for dimension selection and diagonal augmentation to smooth the estimates and improve performance over the naive methodology for small sample sizes.
+\item {\bf{Chapter 4}} The case of weighted graphs with contamination is investigated. We propose an estimation methodology based on robust L$q$ estimation followed by low-rank adjacency spectral decomposition, which both maintains L$q$ robustness and wins the bias-variance tradeoff by exploiting low-rank graph structure.
+\item {\bf{Chapter 5}} The results and their extensions are discussed from different perspectives.
 \end{itemize}
-%
-\noindent Again, we don't indent here.

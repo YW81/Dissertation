@@ -89,7 +89,7 @@ Thus for $a \in \mathcal{A}$ we have
 Let $X_1, \dots, X_n \stackrel{iid}{\sim} F$ for some distribution $F$ on $\mathcal{X}$, then the model is denoted by $\mathrm{LPM}(\mathcal{X}, F, \kappa)$.
 \end{definition}
 
-Among all the LPMs, we are particularly interested in the random dot product graph (RDPG) \citep{young2007random, nickel2007random}.
+Among all the LPMs, we are particularly interested in the random dot product graph (RDPG) \citep{young2007random, nickel2008random}.
 
 \begin{definition} [Random Dot Product Graph]
 \label{def:RDPG}
@@ -215,17 +215,18 @@ As a reminder, for weighted graphs, each edge is assigned with a positive real-v
 \subsection{Weighted Independent Edge Model}
 \label{sec:WIEM}
 
-As introduced in Section~\ref{sec:IEM}, under $\mathrm{IEM}(P)$, for $i, j \in [n]$ and $i < j$, the edge weight $A_{ij}$ is distributed from a Bernoulli distribution with parameter $P_{ij}$ independent of other edges.
+As introduced in Section~\ref{sec:IEM}, under $\mathrm{IEM}(P)$, for $i, j \in [n]$ and $i < j$, the edge weight $A_{ij}$ is drawn from a Bernoulli distribution with parameter $P_{ij}$ independent of all other edges.
 We first extend IEM to weighted independent edge model (WIEM).
 
 \begin{definition} [Weighted Independent Edge Model]
 \label{def:WIEM}
 Consider a one-parameter family of distributions $\mathcal{F} = \{ f_{\theta} : \theta \in \Theta \subset \mathbb{R} \}$. Let the graph parameters be a matrix $P \in \Theta^{n \times n} \subset \mathbb{R}^{n \times n}$.
-Then under a {\em{weighted independent edge model} (WIEM)} with respect to $\mathcal{F}$, for $i, j \in [n]$ and $i < j$, the edge weight between vertex $i$ and vertex $j$ is distributed according to $f_{P_{ij}}$ independently.
+Then under a {\em{weighted independent edge model} (WIEM)} with respect to $\mathcal{F}$, for $i, j \in [n]$ and $i < j$, the edge weight between vertex $i$ and vertex $j$ is drawn from $f_{P_{ij}}$ independent of all other edges.
 \end{definition}
 
-To see that an IEM is a special case of WIEM, let $\mathcal{F}$ be the collection of Bernoulli distributions and let the graph parameters be a symmetric and hollow matrix $P \in [0, 1]^{n \times n}$.
-Note that the graphs considered in this paper are undirected without self-loops, thus the parameter matrix $P$ needs to be symmetric and hollow. However, for convenience, we still define the parameters to be an $n$-by-$n$ matrix while only $n \choose 2$ of them are effective.
+Thus IEM is a special case of WIEM, with $\mathcal{F}$ representing the collection of Bernoulli distributions and $\Theta = [0, 1]$.
+
+Note that the graphs considered in this paper are undirected without self-loops, and the parameter matrix $P$ can be considered to be symmetric and hollow. That is, for convenience, we still define the parameters to be an $n$-by-$n$ matrix while only $n \choose 2$ of them are active.
 
 
 
@@ -235,10 +236,10 @@ Note that the graphs considered in this paper are undirected without self-loops,
 As discussed in Section~\ref{sec:RDPG}, the connectivity between two vertices in a graph generally depends on some hidden properties of the corresponding vertices. Such property is well captured by LPM as well as RDPG, which is a special case of LPM. In this section, we generalize RDPG to a weighted version so that it can model weighted graphs. 
 
 \begin{definition}[Weighted Random Dot Product Graph]
-Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. The {\em{weighted random dot product graph (WRDPG)}} with respect to $\mathcal{F}$ is defined as following: Let $X \in \mathbb{R}^{n \times d}$ be such that $X = [X_1, X_2, \dotsc, X_n]^{\top}$, where $X_i \in \mathbb{R}^d$ for all $i \in [n]$. The matrix $X$ is random and satisfies $\mathbb{P}( X_i^{\top} X_j \in \Theta ) = 1$ for all $i, j \in [n]$. Conditioned on $X$, $A_{ij}$ follows distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = X_i^{\top} X_j$ independent of others for $i, j \in [n]$ and $i < j$.
+Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. The {\em{weighted random dot product graph (WRDPG)}} with respect to $\mathcal{F}$ is defined via consideration of latent position matrix $X \in \mathbb{R}^{n \times d}$ such that $X = [X_1, X_2, \dotsc, X_n]^{\top}$, where $X_i \in \mathbb{R}^d$ for all $i \in [n]$. The matrix $X$ is random and satisfies $\mathbb{P}\left[ X_i^{\top} X_j \in \Theta \right] = 1$ for all $i, j \in [n]$. Conditioned on $X$, the entries of the adjacency matrix $A$ are independent and $A_{ij}$ is a random variable following distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = X_i^{\top} X_j $ for all $i < j \in [n]$.
 \end{definition}
 
-Under the WRDPG defined above, the parameter matrix $P = X X^T \in \mathbb{R}^{n \times n}$ is automatically symmetric because the link function is inner product. Moreover, to have symmetric graphs without self-loops, only $A_{ij}$ ($i < j$) are sampled while leaving the diagonals of $A$ to be all zeros.
+Under the WRDPG defined above, the parameter matrix $P = X X^{\top} \in \Theta^{n \times n} \subset \mathbb{R}^{n \times n}$ is automatically symmetric because the link function is the inner product. Moreover, to have symmetric graphs without self-loops, only $A_{ij}$ ($i < j$) are sampled while leaving the diagonals of $A$ to be all zeros.
 
 After such extension, WRDPG inherits some properties from RDPG naturally, for example the positive defininteness of $P$, non-identifiability, etc. And similarly, since $P$ is still the outer product of the latent positions $X$ in WRDPG, it also motivates the low-rank estimator based on spectral decomposition for weighted graphs which will be discussed in later sections.
 
@@ -250,10 +251,10 @@ After such extension, WRDPG inherits some properties from RDPG naturally, for ex
 
 \begin{definition} [Weighted Stochastic Blockmodel]
 \label{def:SBM}
-Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. A $K$-block {\em{weighted stochastic blockmodel (WSBM)}} with respect to $\mathcal{F}$ is defined as following: Let block probability matrix be $B \in \Theta^{K \times K}$, and let the vector of block memberships be $\tau \in [K]^n$, where for each $i \in [n]$, $\tau_i = k$ means vertex $i$ is a member of block $k$. Then $A_{ij}$ follows distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = B_{ij}$ independent of others for $i, j \in [n]$ and $i < j$.
+Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. A $K$-block {\em{weighted stochastic blockmodel (WSBM)}} with respect to $\mathcal{F}$ is defined as follows: Let block probability matrix be $B \in \Theta^{K \times K}$, and let the vector of block memberships be $\tau \in [K]^n$, where for each $i \in [n]$, $\tau_i = k$ means vertex $i$ is a member of block $k$. Then $A_{ij}$ follows distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = B_{ij}$ independent of others for $i, j \in [n]$ and $i < j$.
 \end{definition}
 
-WSBM can be defined in a similar way in the scenario when the block probability matrix $B$ and block membership vector $\tau$ are random. As mentioned in Section~\ref{sec:SBM}, all analysis for unweighted graphs is based on RDPG setting. Likewise, in this section we will represent WSBM as WRDPG. Because of the structure of WRDPG, in order to consider WSBM as a WRDPG, the block probability matrix $B$ needs to be positive semidefinite. From now on, we will denote the sub-model of WSBM with positive semi-definite $B$ as the WSBM.
+WSBM can be defined in a similar way in the scenario when the block probability matrix $B$ and block membership vector $\tau$ are random. As mentioned in Section~\ref{sec:SBM}, all analysis for unweighted graphs is based on RDPG setting. Likewise, in this section we will represent WSBM as WRDPG. Because of the structure of WRDPG, in order to consider WSBM as a WRDPG, the block probability matrix $B$ is assumed be positive semidefinite. From now on, we will denote the sub-model of WSBM with positive semi-definite $B$ as the WSBM.
 
 \begin{definition} [WSBM as WRDPG]
 \label{def:SBM_RDPG}

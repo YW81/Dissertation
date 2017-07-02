@@ -32,7 +32,7 @@ For example, \citet{ginestet2014hypothesis} proposed a way to test if there is a
 While hypothesis testing is the end goal of their work, estimation is a key intermediate step which may be improved by accounting for underlying structure in the mean matrix. 
 Thus, improving the estimation procedures for the mean graph is not only important by itself, but also can be applied to help improve other statistical inference procedures.
 
-To better illustrate the idea, we take the CoRR brain graphs with Desikan atlases as an example. The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section~\ref{sec:LLG_real_data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
+To better illustrate the idea, we take the CoRR brain graphs with Desikan atlases as an example. The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section~\ref{section:data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
 
 
 \begin{figure}[!tbp]
@@ -68,7 +68,7 @@ In general, we do not have any knowledge about this structure so it can be hard 
 One of the most important structures in graphs is the community structure in which vertices are clustered into groups that share similar connectivity structure. The stochastic blockmodel (SBM) \citep{holland1983stochastic} introduced in Section~\ref{sec:SBM} is one model that captures this structural property and is widely used in modeling networks. From population mean $P$ plotted in Figure~\ref{fig:Matrix_desikan_m5}, we can see the brain is a 2-block model at the highest level, representing the two hemispheres.
 More generally, the latent positions model (LPM) \citep{hoff2002latent} introduced in Section~\ref{sec:RDPG}, provides a way to parameterize the graph structure by latent positions associated with each vertex. 
 Latent position models can capture strong community structure like the stochastic blockmodel, but may also allow for more variance within communities and other structures.
-One example of an LPM which captures this middle ground is the random dot product graph (RDPG) \citep{young2007random, nickel2007random} introduced in Section~\ref{sec:RDPG} which motivates our estimator. It generalizes the positive semidefinite SBM by allowing for mixed membership and degree corrections.
+One example of an LPM which captures this middle ground is the random dot product graph (RDPG) \citep{young2007random, nickel2008random} introduced in Section~\ref{sec:RDPG} which motivates our estimator. It generalizes the positive semidefinite SBM by allowing for mixed membership and degree corrections.
 % In this paper, we analyze our estimator in terms of RDPG specifically.
 
 Using estimates of the latent positions based on a truncated eigen-decomposition of the adjacency matrix, we propose an estimator which captures the low-rank structure of the mean graph for the RDPG model. Details about this estimator are discussed in Section~\ref{sec:LLG_phat}.
@@ -129,7 +129,7 @@ Then the $d$-dimensional {\em{adjacency spectral embedding (ASE)}} of $A$ is def
 \end{definition}
 
 Consider the probability matrix $P$ in an RDPG setting with latent positions $X \in \mathbb{R}^{n \times d}$, i.e. $P = X X^{\top}$. Then the $d$-dimensional ASE of $P$ exactly recovers its latent positions $X$.
-Moreover, \citet{sussman2014consistent} showed that the ASE of the adjacency matrix $A$ under RDPG gives good estimates of the latent vectors for each vertex under proper conditions.
+Moreover, \citet{sussman2014consistent} showed that the ASE of the adjacency matrix $A$ under RDPG gives good estimates of the latent vectors for each vertex under appropriate conditions.
 
 
 
@@ -550,7 +550,7 @@ However, overall these differences are nearly indistinguishable for unscaled rel
 In practice, graphs do not follow the independent edge model, let alone an RDPG or SBM, but the mean of a collection of graphs is still of interest for these cases.
 To demonstrate that the estimator $\hat{P}$ is still useful in such cases, we tested its performance on structural connectomic data. 
 The graphs are based on diffusion tensor MR images collected and available at the Consortium for Reliability and Reproducibility (CoRR) \citep{zuo2014open, gorgolewski2015high}.
-The dataset contains 454 different brain scans, each of which was processed to yield an undirected, unweighted graph with no self-loops, using the pipeline described in \citet{roncal2013migraine} and \citet{kiar2016m2g}.
+The dataset contains 454 different brain scans, each of which was processed to yield an undirected, unweighted graph with no self-loops, using the pipeline described in \citet{roncal2013migraine} and \citet{kiar2016ndmg}.
 The vertices of the graphs represent different regions in the brain defined according to an atlas.
 We used three atlases, the JHU atlas with 48 vertices, the Desikan atlas with 70 vertices, and the  CPAC200 atlas with 200 vertices.
 An edge exists between two vertices whenever there is at least one white-matter tract connecting the corresponding two regions of the brain. 

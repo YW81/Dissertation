@@ -2,5 +2,64 @@
 
 \chapter{Discussion}
 \label{chap:discussion}
-\chaptermark{Second Chapter Heading}
+
+When estimating the mean of a collection of unweighted graphs, motivated by the RDPG model, our methodology takes advantage of the low-rank structure of the graphs by applying low-rank approximation to the entry-wise MLE. 
+We give a closed form for the asymptotic relative efficiency between the entry-wise MLE $\bar{A}$ and our estimator $\hat{P}$ in the case of a stochastic blockmodel, demonstrating that when the number of vertices $n$ is sufficiently large, low-rank methods provide a substantial improvement.
+In particular, we show that for a stochastic blockmodel with fixed number of blocks $K$, block size proportion $\rho$, and number of graphs $m$, the low-rank estimator $\hat{P}$ has MSE which is on the order of $n$ times lower than the MSE for $\bar{A}$.
+
+However in practice there will be noise in the observed graph and one may seek to account for this noise with more robust methods. Thus we consider an edge weight gross error model and propose an estimator based on the robust estimation followed by a low-rank decomposition. Under appropriate conditions, theoretical results show that our estimator not only inherits the robust property from robust estimators, but also wins the bias-variance tradeoff by exploiting the low-rank graph structure under appropriate conditions.
+
+In Section~\ref{sec:robust_LLG_theoretical_result}, we present these theories based on the exponential distribution with ML$q$E for clarity. Importantly, in Section~\ref{sec:robust_LLG_extension} we show that these results can be extended to other distributions and other robust estimators as long as they satisfy appropriate conditions. Note that the most important condition is Condition~1, which requires the MLE under the corresponding distribution is concentrated so that we can have all the matrix bounds we need. This generalization makes the theory more flexible and powerful.
+
+
+
+
+
+While the methods considered in this work will often offer substantial improvements, further refinements of these methods which account for the particular traits of connectomics data would be useful to improve estimation further.
+
+
+Another issue that arose in our analysis of the connectome dataset was the presence of structural ones in the mean graph for the population. 
+These structural ones appear since edges between certain regions of the brain are present in all or nearly all members of the healthy population. 
+The low-rank methods tend to miss these always-present edges while the sample mean will always capture them.
+Detecting and incorporating structural ones and zeros could yield methods that share the best elements of both methods considered here.
+
+For the CoRR dataset, we used a cross-validation framework where we compared the estimates based on a subsample to the mean for the held-out set. 
+Another option would be to compare the estimates $\bar{A}$ and $\hat{P}$ to the mean for the entire population including the subsample.
+Both of these analyses lead to very similar results in the cases presented above, but for various reasons one may prefer one analysis over another.
+The cross-validation method is most reasonable from a prediction perspective where prediction about new samples is of interest.
+If instead one is interested in learning directly about the mean of a population, especially a finite population, the sub-sampling approach may be the most logical choice.
+
+
+
+
+
+
+
+Moreover, our estimator outperforms the entry-wise MLE in a cross validation analysis of the CoRR brain graphs and in low- and full-rank simulation settings.
+These results illustrate that $\hat{P}$ performs well even when the low-rank assumption is violated and that $\hat{P}$ is robust and can be applied in practice.
+
+One of the key observations from our real data analysis was that the largest improvements using the low-rank method occurred when the number of graphs $M$ was small, and that it provided only minor improvements or even degraded performance slightly when $M$ was large. 
+However, even in large scale studies the low-rank methods will be useful for estimating graph means for subpopulations, e.g. the population of females over 60 with some college education.
+Using the element-wise sample mean for such small strata, which may have fewer than ten subjects, will frequently result in a degradation of performance.
+Similarly, \citet{durante2014nonparametric} used low-rank deviations from a full rank population mean to model collections of graphs and our methods could be easily adapted to those ideas.
+
+
+
+
+% SBM -> RDPG
+In this work, analysis are mostly under the stochastic blockmodel setting. Noting that the results could be extended to the random dot product graph instead of SBM, i.e. our estimator does not necessarily have the block structure. The reason is that the SBM assumption is just to ensure $\mathrm{rank}(E[\hat{P}^{(q)}])$ has an upper bound invariant of the number of vertices under the contamination model. With this assumption on the rank, all the theories still hold under the RDPG setting. In practice, graphs can hardly be exactly low rank. However, as shown in Figure~\ref{fig:screehist} and Figure~\ref{fig:CCI}, our estimator still provides large improvement with a quasi low-rank structure. Thus our method can be applied to a much more general setting instead of being restricted to SBM.
+
+% Select q
+Selecting an appropriate distortion parameter $q$ in ML$q$E is complicated, and we use a fixed $q = 0.9$ throughout this work without presenting a formal way to do it. In order to have an improved performance, we might want to select an appropriate $q$ based on a adaptive method proposed by \citet{qin2017robust}.
+
+% Vertex correspondence
+In this work, we assume vertex correspondence is known across all graphs. However, in some applications, not all vertices are matched. In this case, our method can still apply after running the graph matching algorithms \citep{lyzinski2016graph, lyzinski2015spectral, lyzinski2014seeded}.
+
+% uncontaminated
+The robust estimators $\hat{P}^{(q)}$ and $\widetilde{P}^{(q)}$ outperform the non-robust ones $\hat{P}^{(1)}$ and $\widetilde{P}^{(1)}$ mainly due to the reduced asymptotic bias in a contaminated model. However, robust estimators like ML$q$E should still provide improvement without contaminations based on finite samples. In this case, the embedding procedure will have a relatively larger impact, leading to a much better estimator $\widetilde{P}^{(q)}$ compared to $\hat{P}^{(q)}$. More work is needed under the uncontaminated setting.
+
+% Other inference
+As we pointed out, improvement for estimation is not only important for the estimation itself, but also can help with other statistical inference procedures. \citet{priebe2015statistical} and \citet{chen2016robust} both discussed vertex classification based on a single unweighted graph with contaminations.
+Moreover, to have a even more general setting, we might want to extend the current RDPG setting to latent positions graphs. \citet{tang2013universally} showed the universally consistency of vertex classification method based on eigen-decomposition.
+More work is needed for inference tasks other than estimation based on multiple weighted graphs.
 

@@ -79,14 +79,17 @@
 \usepackage{color}
 \newcommand{\RT}[1]{{\color{red}RT: #1}}
 
-
+% currsize is not set in the long table environment, so we need to set it before we set it up.
+\makeatletter
+\let\@currsize\normalsize
+\makeatother
 
 
 %\makeglossary % enable the glossary
 
 \begin{document}
 
-\title{To be determined}
+\title{Robust Estimation from Multiple Graphs}
 \author{Runze Tang}
 \degreemonth{July}
 \degreeyear{2017} 

@@ -22,12 +22,14 @@ for (iData in 1:length(dataNameVec)) {
   Abar <- add(AList)/M
   D0 <- Diagonal(n, x = rowSums(Abar)/(n-1))
   eigenResult[[iData]] <- eigen(Abar + D0)$values
-  df <- data.frame(eval=eigenResult[[iData]], k=1:n)
+  df <- data.frame(eval=eigenResult[[iData]]/(eigenResult[[iData]][1]), k=1:n)
+  eigenResult[[iData]][1]
   
   pp_scree[[iData]] <- ggplot(df,aes(x=k,y=eval))+
     geom_line()+
+    scale_y_continuous(breaks=c(-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1))+
     scale_linetype_manual(name="",values=c("longdash","dotted","dotdash"))+
-    xlab("order in algebraic") + ylab("eigenvalue")+
+    xlab("order in algebraic") + ylab("normalized eigenvalue")+
     theme(panel.grid.major = element_line(colour="grey95"),
           panel.grid.minor = element_blank())+
     theme(panel.background = element_rect(fill = 'white', colour = 'grey70'))+
@@ -41,7 +43,8 @@ for (iData in 1:length(dataNameVec)) {
   
   pp_hist[[iData]] <- ggplot(df, aes(x=eval))+
     geom_histogram()+
-    xlab("eigenvalue") + ylab("count")+
+    scale_x_continuous(breaks=c(-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1))+
+    xlab("normalized eigenvalue") + ylab("count")+
     theme(panel.grid.major = element_line(colour="grey95"),
           panel.grid.minor = element_blank())+
     theme(panel.background = element_rect(fill = 'white', colour = 'grey70'))+

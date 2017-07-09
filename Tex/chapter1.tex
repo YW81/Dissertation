@@ -3,7 +3,11 @@
 \chapter{Introduction}
 \label{chap:intro}
 
-Estimation of graph parameters from multiple graphs is at the core of statistics.
+Network analysis has emerged as an area of intense statistical theory and application activity.
+In the general parametric framework, $G \sim f \in \mathcal{F} = \{f_{\theta} : \theta \in \Theta \}$, and selecting a principled and productive estimator $\hat{\theta}$ for the unknown graph parameter $\theta$ given a sample of graphs $\{G^{(1)}, \cdots, G^{(m)}\}$ is one of the most foundational and essential tasks, facilitating subsequent inference.
+For example, \citet{ginestet2014hypothesis} proposes a method to test for a difference between the networks of two groups of subjects in functional neuroimaging; while hypothesis testing is the ultimate goal, estimation is a key intermediate step.
+
+
 When considering unweighted graphs, it is equivalent to estimating the mean in many scenarios.
 The sample mean, motivated by the law of large numbers and the central limit theorem, has its place as one of the most important statistics for this task.
 In modern settings, we take averages almost everywhere, from data in Euclidean space to more complex objects like images, shapes, and documents.
@@ -21,12 +25,27 @@ Twenty-seven years later, \citet{gutmann1982stein} proved that this phenomenon c
 However, while there must be some cases where the sample mean is preferred, this does not mean that other estimators should not be considered.
 In many situations where other structural information is hypothesized, other estimators may be preferable.
 
-In this work, we consider a series of random graph models, with a particular focus on the ones which assume that the connections depend on the hidden properties of the corresponding objects. By proposing a low-rank estimator, we are able to improve the performance of edge-wise sample mean.
+In the first part of this work, we consider a series of (unweighted) random graph models, with a particular focus on the ones which assume that the connections depend on the hidden properties of the corresponding objects. By proposing a low-rank estimator, we are able to improve the performance of edge-wise sample mean.
 
-When we shift our focus to weighted graphs, the noisy edge observations are more likely to be a serious problem to estimation of graph parameters compared to unweighted graphs. As we know, the sample mean is notoriously un-robust to outliers;
-thus, under the possibility of contamination, it is wise to use robust methods, such as the ML$q$E \citep{ferrari2010maximum, qin2013maximum} considered in this paper.
 
-To address this un-robust deficiency while keeping the improvement offered by the low-rank procedure, we propose an estimation methodology which is a natural extension of \citep{tang2016law} to gross error contamination. Our proposed estimator both inherits ML$q$E robustness and wins the bias-variance tradeoff by taking advantage of low-rank structure.
+
+
+When we shift our focus to weighted graphs, 
+the maximum likelihood estimate (MLE) -- the edge-wise sample mean, without taking any graph structure into account, as in the (weighted extension of) the independent edge graph model (IEM) \citep{bollobas2007phase} (described in Section~\ref{sec:WIEM} below) --
+is a natural candidate for our estimation problem. However, the MLE suffers from at least two major deficiencies in our setting: high variance and non-robustness.
+
+In our high dimensional setting (a large number of vertices, $n$), the edge-wise MLE leads to  estimates with unacceptably high variance unless the sample size (the number of graphs, $m$) is exceedingly large.
+However, if the graphs can be assumed to be (approximately) low-rank, then by biasing towards low-rank structure, more elaborate estimators can have greatly reduced variance and win the bias-variance tradeoff.
+For our connectome data (Section~\ref{sec:robust_LLG_corr_data} Figure~\ref{fig:screehist})
+we observe this approximate low-rank property. \citet{tang2016law} develops an estimator based on a low-rank approximation and proves that this new estimator outperforms the edge-wise MLE, decreasing the overall asymptotic variance dramatically by smoothing towards the low-rank structure.
+
+The second edge-wise MLE deficiency in our setting derives from the edge observations being subject to contamination. That is, the weights attributed to edges are possibly observed with noise.
+The sample mean is notoriously un-robust to outliers; thus, under the possibility of contamination, it is wise to use robust methods, such as the ML$q$E \citep{ferrari2010maximum, qin2013maximum} considered in this paper.
+
+To address these two deficiencies simultaneously, we propose an estimation methodology which is a natural extension of \citep{tang2016law} to gross error contamination. Our proposed estimator both inherits ML$q$E robustness and wins the bias-variance tradeoff by taking advantage of low-rank structure.
+
+To address these two deficiencies simultaneously, in the second part of this work, we propose an estimation methodology which is a natural extension of \citep{tang2016law} to gross error contamination. Our proposed estimator both inherits ML$q$E robustness and wins the bias-variance tradeoff by taking advantage of low-rank structure.
+
 
 We organize the work as follows.
 \begin{itemize}

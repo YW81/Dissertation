@@ -13,6 +13,7 @@ When the number of samples $m$ is much smaller than $n^2$, or even $n$, estimati
 Furthermore, using these estimates for subsequent inference tasks such as testing can lead to low power and accuracy.
 By exploiting a bias-variance trade-off, it is often fruitful to develop estimators which have some bias but greatly reduced variance.
 When these estimators are biased towards low-dimensional structures which well approximate the full dimensional population mean, major improvements can be realized \citep{trunk1979problem}.
+And many literatures focus on the low-dimensional representation, for example \citet{allard2012multi} constructs data-dependent multi-scale dictionaries that aim at efficient encoding and manipulating of the data. 
 
 In a striking result, \citet{stein1956inadmissibility} and \citet{james1961estimation} showed that even the arithmetic mean can be dominated by another procedure.
 In particular, James and Stein showed that the sample mean for a multivariate normal distribution with at least three dimensions has strictly higher risk than a procedure that introduces shrinkage, and can be strictly improved by carefully biasing the  estimate towards any given fixed point. 
@@ -32,10 +33,11 @@ For example, \citet{ginestet2014hypothesis} proposed a way to test if there is a
 While hypothesis testing is the end goal of their work, estimation is a key intermediate step which may be improved by accounting for underlying structure in the mean matrix. 
 Thus, improving the estimation procedures for the mean graph is not only important by itself, but also can be applied to help improve other statistical inference procedures.
 
-To better illustrate the idea, we take the CoRR brain graphs with Desikan atlases as an example. The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section~\ref{section:data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
+To better illustrate the idea, we consider the SWU4 brain graphs available through the Consortium for Reliability and Reproducibility (CoRR) \citep{zuo2014open} after processing with ndmg pipeline \citep{kiar2017science, kiar2016ndmg} based on Desikan atlas.
+The dataset contains 454 brain scans with 70 vertices. Each vertex represents a region defined by the Desikan atlases, while an edge exists between two vertices if there is at least one white-matter tract connecting the corresponding regions of the brain. More details about this dataset are given in Section~\ref{section:data}. By observing $m$ graphs sampled from the 454 graphs, our goal is to estimate the mean graph of the population $P$, defined as the entry-wise mean of all the 454 graphs. We plot the population mean graph $P$ on the left panel in Figure~\ref{fig:Matrix_desikan_m5}.
 
 
-\begin{figure}[!tbp]
+\begin{figure}
 \centering
 \includegraphics[height=.2\textheight]{./Figures/P_desikan.pdf} \hspace{-35pt}
 \includegraphics[height=.201\textheight]{./Figures/Abar_desikan_m5.pdf} \hspace{-35pt}
@@ -56,8 +58,8 @@ In the lower level, we plot three heat maps in the similar way based on sample s
 
 The element-wise sample mean is a reasonable estimator if we consider the general independent edge model (IEM) \citep{bollobas2007phase} introduced in Section~\ref{sec:IEM} without taking any additional structure into account. 
 However, with only a small sample size, such as when the sample size is much less than the number of vertices, it does not perform very well.
-Now take a sample of size $m=5$ in the CoRR dataset example with Desikan atlases mentioned above, then we calculate the entry-wise sample mean $\bar{A}$ and plot it in the top middle panel of Figure~\ref{fig:Matrix_desikan_m5}. Darker pixels indicate a higher probability of an edge between the given vertices.
-We can see $\bar{A}$ gives a fair estimate of $P$. However, there are still an amount of edges being estimated very inaccurately. In order to see these inaccurate estimates clearly, in the upper triangular of the heat maps for $\bar{A}$, we highlight the 18 edges which have absolute estimation error larger than $0.4$ based on the same color scale.
+Now take a sample of size $m=5$ in the SWU4 dataset example with Desikan atlases mentioned above, then we calculate the entry-wise sample mean $\bar{A}$ and plot it in the top middle panel of Figure~\ref{fig:Matrix_desikan_m5}. Darker pixels indicate a higher probability of an edge between the given vertices.
+We can see $\bar{A}$ gives a fair estimate of $P$. However, there are still some node pairs being estimated very inaccurately. Specifically, in the upper triangular of the heat maps for $\bar{A}$, we highlight the 18 edges which have absolute estimation error larger than $0.4$ based on the same color scale.
 When the sample size is small, the performance of $\bar{A}$ degrades due to its high variances. Such phenomenon is most obvious when we decrease the sample size from $m = 5$ to $m = 1$.
 In the bottome middle panel of Figure~\ref{fig:Matrix_desikan_m5}, we plot the heat map of $\bar{A}$ based on sample size $m = 1$. Since there is only one observed graph, $\bar{A}$ is binary and thus very bumpy. Similarly, we use the same absolute estimation error threshold $0.4$ and highlight 504 edges in the upper triangular.
 Intuitively, an estimator incorporating structure in the distribution of graphs, assuming the estimator is computationally tractable, is preferable to the entry-wise sample mean. 
@@ -65,7 +67,7 @@ In general, we do not have any knowledge about this structure so it can be hard 
 
 
 
-One of the most important structures in graphs is the community structure in which vertices are clustered into groups that share similar connectivity structure. The stochastic blockmodel (SBM) \citep{holland1983stochastic} introduced in Section~\ref{sec:SBM} is one model that captures this structural property and is widely used in modeling networks. From population mean $P$ plotted in Figure~\ref{fig:Matrix_desikan_m5}, we can see the brain is a 2-block model at the highest level, representing the two hemispheres.
+One of the most important structures in graphs is the community structure in which vertices are clustered into groups that share similar connectivity structure. The stochastic blockmodel (SBM) \citep{holland1983stochastic} introduced in Section~\ref{sec:SBM} is one model that captures this structural property and is widely used in modeling networks. From population mean $P$ plotted in Figure~\ref{fig:Matrix_desikan_m5}, we can see the brain is roughly a 2-block model at the highest level, representing the two hemispheres.
 More generally, the latent positions model (LPM) \citep{hoff2002latent} introduced in Section~\ref{sec:RDPG}, provides a way to parameterize the graph structure by latent positions associated with each vertex. 
 Latent position models can capture strong community structure like the stochastic blockmodel, but may also allow for more variance within communities and other structures.
 One example of an LPM which captures this middle ground is the random dot product graph (RDPG) \citep{young2007random, nickel2008random} introduced in Section~\ref{sec:RDPG} which motivates our estimator. It generalizes the positive semidefinite SBM by allowing for mixed membership and degree corrections.
@@ -136,9 +138,8 @@ Moreover, \citet{sussman2014consistent} showed that the ASE of the adjacency mat
 
 \subsection{Choosing Dimension}
 \label{sec:dim_select}
-Often in dimensionality reduction techniques, the choice for dimension $d$, relies on analyzing the set of the ordered eigenvalues, looking for a ``gap'' or ``elbow'' in the scree-plot. \citet{zhu2006automatic} present an automated method for finding this gap in the scree-plot that takes only the ordered eigenvalues as an input and uses Gaussian mixture modeling to find these gaps.
-The mixture modeling results in multiple candidate dimensions or elbows, and our analysis indicated that underestimating the dimension is much more harmful than overestimating the dimension.
-For this reason, we used the 3rd elbow in the experiments performed for this work.
+Often in dimensionality reduction techniques, the choice for dimension $d$, relies on analyzing the set of the ordered eigenvalues, looking for a ``gap'' or ``elbow'' in the scree-plot. 
+In particular, a method proposed in \citep{zhu2006automatic} finds the gaps in the scree-plot by positing a Gaussian mixture model for the ordered eigenvalues. This method provides multiple choices based on different elbows. In this paper, to avoid under-estimating the dimension, which is often much more harmful than over-estimating it, we choose the third elbow returned by the procedure of \citep{zhu2006automatic}.
 
 Universal Singular Value Thresholding (USVT) is a simple estimation procedure proposed in \citet{chatterjee2015matrix} that can work for any matrix that has ``a little bit of structure''. 
 In our setting, it selects the dimension $d$ as the number of singular values that are greater than a constant $c$ times $\sqrt{n/m}$.
@@ -183,7 +184,7 @@ In this section, we present two estimators, the standard element-wise sample mea
 The most natural estimator to consider is to take the average of the observed adjacency matrices which yields the element-wise sample mean.
 This estimator, defined as $\bar{A}=\frac{1}{m}\sum_{t=1}^m A^{(t)}$, is the  maximum likelihood estimator (MLE) for the mean graph $P$ if the graphs are sampled from an IEM distribution.
 It is unbiased so $\Ex[\bar{A}]=P$ with entry-wise variance $\mathrm{Var}(\bar{A}_{ij}) = P_{ij} (1-P_{ij})/m$. Moreover, $\bar{A}$ is the uniformly minimum-variance unbiased estimator, so it has the smallest variance among all unbiased estimators and enjoys the many asymptotic properties of the MLE as $m\to \infty$ for fixed $n$.
-However, if graphs with a large number of vertices are of interest, there are no useful asymptotic properties for $\bar{A}$ as the number of vertices $n$ becomes large for fixed $m$.
+However, if graphs with a large number of vertices are of interest, $\bar{A}$ does not have any asymptotic properties as the number of vertices $n$ becomes large for fixed $m$, while our estimator $\hat{P}$ discussed in Section~\ref{sec:LLG_phat} does.
 
 Additionally, $\bar{A}$ doesn't exploit any graph structure.
 If the graphs are distributed according to an RDPG or SBM, then $\bar{A}$ is no longer the maximum likelihood estimator since it is not guaranteed to satisfy the properties of the mean graph for that model.
@@ -411,12 +412,12 @@ As an example, consider a 2-block SBM.
 If each of the blocks contain half the vertices, then for each pair of vertices, the relative efficiency is approximately $4/n$. 
 If the first block gets larger, with $\rho_1\to 1$, then the RE for estimating $P_{ij}$ with $\tau_i=\tau_j=1$ will tend to its minimum of $2/n$. 
 On the other hand as $\rho_1\to 1$, if $\tau_i=1$ and $\tau_j=2$, then since $\rho_2=1-\rho_1$, the relative efficiency for estimating such an edge pair will be approximately $1$ and the same will hold if $\tau_i=\tau_j=2$.
-Note that the maximum value for the relative efficiency in a two-block model is achieved when $\rho_1=1/n$ and $\rho_2=(n-1)/n$ in which case the relative efficiency is $n/(n-1) \approx 1$.
+Note that the maximum value for the relative efficiency of two vertices from different blocks in a two-block model is achieved when $\rho_1=1/n$ and $\rho_2=(n-1)/n$ in which case the relative efficiency is $n/(n-1) \approx 1$.
 (Note values of $\rho_s$ below $1/n$ correspond to graphs where typically no vertices are in that block, so the effective minimum we can consider for $\rho_s$ is $1/n$.)
 
-\begin{figure}[!t]
+\begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{./Figures/Rho.pdf}
+\includegraphics[width=1\textwidth]{./Figures/rho.pdf}
 \caption[Asymptotic scaled relative efficiency in a 2-block SBM]{Asymptotic scaled relative efficiency $n \cdot \mathrm{RE}(\bar{A},\hat{P})$ in a 2-block SBM.
 For each distinct pair of edge probabilities in a 2-block SBM specified in Eq.~\ref{eq:sim_setting}, the scaled relative efficiency only depends on the proportion of vertices in each block.
 We show the scaled asymptotic relative efficiency as $\rho_1$ changes from $0,1$ for pairs of vertices where either both are in block one or one is in block one and one is in block two. 
@@ -469,7 +470,7 @@ As a result, $\mathrm{RE}(\bar{A},\hat{P})$ will increase as $m$ increases for f
 Indeed, for large $m$ we could have $\mathrm{RE}(\bar{A},\hat{P})\geq 1$ since we cannot guarantee that $\hat{P}$ will choose the optimal dimension.
 The lack of gaps in the eigenvalues of the mean graph makes dimension reduction quite dangerous.
 In an extreme case, the low-rank assumption will be most violated when all eigenvalues of the mean graph are almost equal. This leads to a certain type of structure, which is close to a constant times the identity matrix. However we do not see such structure in connectomics.
-We will discuss this further in Section \ref{sec:LLG_corr_data} when applying our estimator to the CoRR dataset.
+We will discuss this further in Section \ref{sec:LLG_corr_data} when applying our estimator to the SWU4 dataset.
 \end{remark}
 
 
@@ -509,7 +510,7 @@ In Figure~\ref{fig:RE}, we plot the (estimated) relative efficiency (top panel) 
 The different dashed lines denote the RE and scaled RE associated with different block pairs, either $B_{11}$, $B_{12}$, or $B_{22}$. 
 As expected from Theorem~\ref{thm:ARE}, the top panel indicates that the relative efficiencies are all very close together and much less than 1, decreasing at the rate of $1/n$, indicating that $\hat{P}$ is performing better than $\bar{A}$.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./Figures/RE.pdf}
 \includegraphics[width=1\textwidth]{./Figures/scaled_RE.pdf}
@@ -544,15 +545,15 @@ However, overall these differences are nearly indistinguishable for unscaled rel
 
 
 
-\section{CoRR Brain Graphs Experiment}
+\section{SWU4 Brain Graphs Experiment}
 \label{sec:LLG_corr_data}
 
 In practice, graphs do not follow the independent edge model, let alone an RDPG or SBM, but the mean of a collection of graphs is still of interest for these cases.
 To demonstrate that the estimator $\hat{P}$ is still useful in such cases, we tested its performance on structural connectomic data. 
-The graphs are based on diffusion tensor MR images collected and available at the Consortium for Reliability and Reproducibility (CoRR) \citep{zuo2014open, gorgolewski2015high}.
-The dataset contains 454 different brain scans, each of which was processed to yield an undirected, unweighted graph with no self-loops, using the pipeline described in \citet{roncal2013migraine} and \citet{kiar2016ndmg}.
+The graphs are based on diffusion tensor MR images of SWU4 dataset collected and available at the Consortium for Reliability and Reproducibility (CoRR) \citep{zuo2014open} (see Section~\ref{section:data}).
+The dataset contains 454 different brain scans, each of which was processed to yield an undirected, unweighted graph with no self-loops, using the pipeline described in \citep{kiar2017science, kiar2016ndmg}.
 The vertices of the graphs represent different regions in the brain defined according to an atlas.
-We used three atlases, the JHU atlas with 48 vertices, the Desikan atlas with 70 vertices, and the  CPAC200 atlas with 200 vertices.
+We used three atlases, the JHU atlas with 48 vertices \citep{oishi2010mri}, the Desikan atlas with 70 vertices \citep{desikan2006automated}, and the  CPAC200 atlas with 200 vertices \citep{sikka2014towards}.
 An edge exists between two vertices whenever there is at least one white-matter tract connecting the corresponding two regions of the brain. 
 Details of this dataset are provided in the following section.
 
@@ -581,14 +582,14 @@ In particular we will use the average of the mean squared error across all pairs
 As in the previous section, we will not use analytical evaluations of the MSE and instead estimate the MSE and relative efficiencies via Monte Carlo simulations.
 
 We ran 1000 simulations on each of the three atlases for sample size $m=5, 10$. For $m=1$, we only have 454 different possibilities. So instead of running 1000 simulations, we looked through all 454 possible sample with size 1. As long as we determine which dimension to embed, the two estimates $\bar{A}$ and $\hat{P}$ can be calculated based on the sample.
-In practice, we use algorithms like Zhu and Ghodsi's method or USVT discussed in Section~\ref{sec:dim_select} to select the dimension $d$. These methods are neither computationally advanced nor requiring sophisticated algorithms.
+In practice, we use algorithms like Zhu and Ghodsi's method or USVT discussed in Section~\ref{sec:dim_select} to select the dimension $d$. These methods are relatively easy to compute.
 We plot the estimated relative efficiencies between $\bar{A}$ and $\hat{P}$ in Figure~\ref{fig:corr_re}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=1\linewidth]{./Figures/corr_data_REdiff.pdf}
 \end{center}
-\caption[Relative efficiencies of two estimators for the CoRR data set]{Relative efficiencies of $\bar{A}$ versus $\hat{P}$ for the CoRR data set.
+\caption[Relative efficiencies of two estimators for the SWU4 dataset]{Relative efficiencies of $\bar{A}$ versus $\hat{P}$ for the SWU4 dataset.
 For each atlas, JHU, Desikan, and CPAC 200, we sampled graphs which we used to compute $\bar{A}$ and $\hat{P}$.
 We compared different sample sizes $m$ and different dimension selection procedures, ZG and USVT.
 For each of the two methods for computing $\hat{P}$, we estimated their relative efficiencies with respect to the sample mean $\bar{A}$.
@@ -638,9 +639,9 @@ We also highlight the five regions corresponding to vertices that contribute mos
 Notably, three of these top five regions form a contiguous group of regions.
 The top five regions are the inferior temporal, middle temporal, and transverse temporal regions in the left hemisphere and the parahippocampal and parsopercularis regions in the right hemisphere of the Desikan atlas.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{./Figures/Diff_between_desikan.png}
+\includegraphics[width=1\textwidth]{./Figures/Diff_Between_desikan.png}
 \caption[Top 5 regions of the brain and top 50 connections between regions with the largest differences between two estimators]{Top 5 regions of the brain (vertices in graphs) and top 50 connections between regions (edges in graphs) with the largest differences $|\bar{A}_{ij} - P_{ij}| - |\hat{P}_{ij} - P_{ij}|$.
 Red edges indicate that $\hat{P}$ overestimate $P$ while blue means that $\hat{P}$ underestimates $P$. The edge width is determined by the estimation error. Connections with larger estimation error are represented by thicker lines. This figure shows the regions and connections of the brain where $\hat{P}$ outperforms $\bar{A}$ the most for estimating $P$.}
 \label{fig:Diff_between_desikan}
@@ -664,12 +665,12 @@ When $m$ is 1 or 5, $\bar{A}$ has large variance which leads to large $\hat{\mat
 Additionally, we see that there is a large range of dimensions where the performance for $\hat{P}$ is superior to $\bar{A}$. 
 With a larger $m$, the performance of $\bar{A}$ improves so that its performance is frequently superior but nearly identical to $\hat{P}$.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
 \includegraphics[width=.99\textwidth]{./Figures/corr_data_MSE_jhu.pdf}\\
 \includegraphics[width=.99\textwidth]{./Figures/corr_data_MSE_desikan.pdf}\\
 \includegraphics[width=.99\textwidth]{./Figures/corr_data_MSE_CPAC200.pdf}
-\caption[Comparison of MSE of two estimators for three atlases at three sample sizes for the CoRR data]{Comparison of $\hat{\mathrm{MSE}}$ of $\hat{P}$ and $\bar{A}$ for three atlases at three sample sizes for the CoRR data.
+\caption[Comparison of MSE of two estimators for three atlases at three sample sizes for the SWU4 data]{Comparison of $\hat{\mathrm{MSE}}$ of $\hat{P}$ and $\bar{A}$ for three atlases at three sample sizes for the SWU4 data.
 These plots show the MSE for $\bar{A}$ (solid line) and $\hat{P}$ (dashed line) for three dataset (JHU, Desikan, and CPAC200) while embedding the graphs into different dimensions and with different sample sizes $m$. The average dimensions chosen by the 3rd elbow of Zhu and Ghodsi is denoted by a triangle
  and those chosen by USVT with threshold equaling 0.7 is denoted by a square.
 Vertical intervals, visible mainly in the $n=48,70$ and $m=1$ plots, represent the 95\% confidence interval for the mean squared errors. }
@@ -680,11 +681,12 @@ Vertical intervals, visible mainly in the $n=48,70$ and $m=1$ plots, represent t
 \subsection{Interpretability of Low-rank Methods}
 \label{sec:interpretability}
 
-Low-rank methods can often be more easily interpreted in a vertexy way.
+Low-rank methods can often be more easily interpreted.
 In particular, in the RDPG model, by representing a low-rank matrix in terms of the latent positions, where each vertex is represented as a vector in $\mathbb{R}^d$ and the entries of the matrix are given by the inner products of these vectors, one can analyze and visualize the geometry of these vectors in order to interpret how each vertex is behaving in the context of the larger graph. 
-Now we take the CoRR brain graphs with Desikan atlases as an example. By embedding the mean graph $P$ which is the average of all 454 graphs, we get the estimated latent positions $\hat{X} \in \mathbb{R}^{n \times d}$, where $n=70$ is the number of vertices and $d = 8$ is the dimension selected by the Zhu and Ghodsi's method.
-We color the brain using the first 4 dimensions of $\hat{X}$ as in Figure~\ref{fig:eigenvector_brain} respectively. By the figure of the second dimension, we can see a clear distinction of the left and right hemisphere as conveyed in the second dimension. Additionally, such a representation allows the use of techniques from multivariate analysis to further study the estimated population mean.
-
+Now we take the SWU4 brain graphs with Desikan atlases as an example. By embedding the mean graph $P$ which is the average of all 454 graphs, we get the estimated latent positions $\hat{X} \in \mathbb{R}^{n \times d}$, where $n=70$ is the number of vertices and $d = 8$ is the dimension selected by the Zhu and Ghodsi's method.
+We color the brain separately for each of the first 4 dimensions of $\hat{X}$ as in Fig.~\ref{fig:eigenvector_brain} respectively. The color of the $i$-th brain region for the $j$-th dimension is determined by the value of $\hat{X}_{ij}$, i.e.\ the $j$-th element of the estimated latent vector for the $i$-th region. Red represents a positive value while blue represents the negative one. And the darker the color is, the smaller the magnitude of the value is.
+The 1st dimension depicted in Panel (a) of the figure provides an average level of the entire brain. Then in Panel (b) particularly, we can see a clear distinction of the left and right hemisphere as conveyed in the 2nd dimension. For the other dimensions, it seems that they correspond to different lobes. For example, red color represents Frontal and Temporal in the 3rd dimension, while the light blue matches Occipital roughly in the 4th dimension. We will explore this connection between dimensions and lobes further in Section~\ref{section:lobe_structure}. Additionally, such a representation allows the use of techniques from multivariate analysis to further study the estimated population mean.
+ 
 \begin{figure}	
 \centering
 \begin{subfigure}[t]{.7\textwidth}
@@ -726,24 +728,28 @@ We color the brain using the first 4 dimensions of $\hat{X}$ as in Figure~\ref{f
   \includegraphics[trim={5cm 5cm  4cm  4cm },clip,height=.34\linewidth]{./Figures/desikan4c.png}
 \end{center}
 \end{subfigure}\\
-\caption[Brain plots colored by the first 4 dimensions of embedding for the Desikan atlas]{Brain plots colored by the first 4 dimensions of $\hat{X}$ for the Desikan atlas respectively.
-We plot the brain using the first 4 dimensions of $\hat{X}$. From the figure, we can see the embeddings have their own neuro-meaning, for example there is a clear distinction of the left and right hemisphere as conveyed in the second dimension. Also, the first dimension provides an average level of the entire brain.}
+\caption[Brain plots colored separately for each of the first 4 dimensions of embedding under the Desikan atlas]{Brain plots colored separately for each of the first 4 dimensions of $\hat{X}$ under the Desikan atlas.
+We color the brain separately for each of the first 5 dimensions of $\hat{X}$.
+The color of the $i$-th brain region for the $j$-th dimension is determined by the value of $\hat{X}_{ij}$, i.e.\ the $j$-th element of the estimated latent vector for the $i$-th region. Red represents a positive value while blue represents the negative one. And the darker the color is, the smaller the magnitude of the value is.
+From the figure, we can see the embeddings have their own neuro-meaning.
+The first dimension depicted in Panel (a) of the figure provides an average level of the entire brain. Then in Panel (b) particularly, we can see a clear distinction of the left and right hemisphere as conveyed in the second dimension. For the other dimensions, it seems that they correspond to different lobes. And we will explore it further later in Section~\ref{section:lobe_structure}.}
 \label{fig:eigenvector_brain}
 \end{figure}
 
 
 
-\subsection{Challenges of the CoRR Dataset}
+\subsection{Challenges of the SWU4 Dataset}
 
-While our estimator $\hat{P}$ performs well when the sample size $m$ is small and the number of vertices $n$ is large, the CoRR dataset itself does not strictly adhere to the low-rank assumptions of our theory.
+While our estimator $\hat{P}$ performs well when the sample size $m$ is small and the number of vertices $n$ is large, the SWU4 dataset itself does not strictly adhere to the low-rank assumptions of our theory.
 
 As discussed in Remark \ref{remark:low_rank}, we first check whether the dataset has the low-rank property or not. In Figure~\ref{fig:LLG_screeplot}, we plot the relative error $\|\mathrm{lowrank}_d(P)-P\|_F^2/\|P\|_F^2$ of using a rank-$d$ approximation of $P$ (see Algorithm~\ref{algo:LLG_lowrank}) as solid curves.
 The rate at which this curve tends to zero provides an indication of the relative performance of using $\hat{P}_d$ as compared to $\bar{A}$ when $m$ is large. 
 For all three atlases, while these error rates do tend to zero relatively quickly, substantial errors remain for any low-rank approximation.
-This can be compared to the dashed lines which show how these errors would behave if $P$ was truly low-rank.
-As can be expected, the CoRR dataset is actually high-rank, which violates the low-rank assumption.
+This can be compared to the dashed lines which show how these errors would behave if $P$ was truly low-rank where the ranks are selected by Zhu and Ghodsi's method.
+In particular, the selected dimensions are 13 for JHU, 8 for Desikan, and 37 for CPAC200.
+As can be expected, the SWU4 dataset is actually high-rank, which violates the low-rank assumption.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
 \includegraphics[width=.6\textheight]{./Figures/screeplot_ratio_all.pdf} 
 \caption[Relative error of the low-rank approximation of the population mean]{Relative error of the rank-$d$ approximation of the population mean.
@@ -753,15 +759,15 @@ Also, if $P$ actually has the low-rank property, the relative error plot will lo
 \label{fig:LLG_screeplot}
 \end{figure}
 
-In addition, by plotting the histograms of the eigenvalues of $P$ in Figure~\ref{fig:LLG_histogram}, we see that there are a bunch of negative eigenvalues, which indicates that the positive semi-definiteness is also violated in this real data experiment. This makes it even harder for $\hat{P}$ to outperform $\bar{A}$. 
+In addition, by plotting the histograms of the eigenvalues of $P$ in Figure~\ref{fig:LLG_histogram}, we see that there are many negative eigenvalues, which indicates that the positive semi-definiteness is also violated in this real data experiment. This makes it even harder for $\hat{P}$ to outperform $\bar{A}$. 
 
- \begin{figure}[!htbp]
+ \begin{figure}
  \centering
  \includegraphics[height=.2\textheight]{./Figures/hist_JHU.pdf} 
  \includegraphics[height=.2\textheight]{./Figures/hist_desikan.pdf} 
  \includegraphics[height=.2\textheight]{./Figures/hist_CPAC200.pdf}
  \caption[Histogram of the population mean]{Histogram of the population mean.
- These figures show the histograms of the eigenvalues of the mean graph of all 454 graphs with diagonal augmentation. A bunch of negative eigenvalues indicate that $P$ is not positive semi-definite.
+ These figures show the histograms of the eigenvalues of the mean graph of all 454 graphs with diagonal augmentation. Many negative eigenvalues indicate that $P$ is not positive semi-definite.
  }
  \label{fig:LLG_histogram}
  \end{figure}
@@ -773,10 +779,10 @@ We can adapt our low-rank methods by including large negative eigenvalues as wel
 Second, approximately 12.8\% of the entries of $P$ are exactly equal to 1.
 For these edges, $\bar{A}$ will always have zero error, while $\hat{P}$ will necessarily give a less accurate estimate. 
 
-Moreover, by the histogram of $P$, i.e. the entry-wise mean of all 454 graphs based on the Desikan atlas, as in Figure~\ref{fig:P_hist_desikan}, we can clearly see more edge probabilities are concentrated on both sides, i.e. close to 0 or 1. In particular, 12.8\% of the edges has probability equals to 1 exactly. For these edges, MLE $\bar{A}$ always recover the probability 1 exactly even with only 1 observation, while $\hat{P}$ will give a less accurate estimate because of the smoothing effect. So the CoRR dataset we consider is highly preferable to $\bar{A}$ compared to $\hat{P}$. 
+Moreover, by the histogram of $P$, i.e. the entry-wise mean of all 454 graphs based on the Desikan atlas, as in Figure~\ref{fig:P_hist_desikan}, we can clearly see more edge probabilities are concentrated on both sides, i.e. close to 0 or 1. In particular, 12.8\% of the edges has probability equals to 1 exactly. For these edges, MLE $\bar{A}$ always recover the probability 1 exactly even with only 1 observation, while $\hat{P}$ will give a less accurate estimate because of the smoothing effect. So the SWU4 dataset we consider is highly preferable to $\bar{A}$ compared to $\hat{P}$. 
 However, even in this situation, $\hat{P}$ still outperforms $\bar{A}$ when the sample size is relatively small.
 
- \begin{figure}[!htbp]
+ \begin{figure}
  \centering
  \includegraphics[width=0.8\textwidth]{./Figures/P_hist_desikan.pdf}
  \caption[Histogram of mean graph for Desikan atlas]{Histogram of $P$ for Desikan atlas.
@@ -784,33 +790,33 @@ However, even in this situation, $\hat{P}$ still outperforms $\bar{A}$ when the 
  \label{fig:P_hist_desikan}
  \end{figure}
 
-Despite all these challenges, our results show that when the sample size is relatively small, such as $m=1$ or $m=5$, and for the atlases with a larger number of vertices, $\hat{P}$ still gives a better estimate than $\bar{A}$ for the CoRR dataset.
+Despite all these challenges, our results show that when the sample size is relatively small, such as $m=1$ or $m=5$, and for the atlases with a larger number of vertices, $\hat{P}$ still gives a better estimate than $\bar{A}$ for the SWU4 dataset.
 Importantly, this improvement is robust to the embedding dimension provided the dimension is not underestimated.
 
 
 
 \subsection{Lobe Structure behind the Low-rank Methods}
 \label{section:lobe_structure}
-In previous sections, we have shown that how the low-rank methods help us improve the accuracy of estimation while providing convenient interpretations simultaneously. Certainly there is more behind it. In this section, we focus on the lobe structure in particular.
+In previous sections, we have shown that how the low-rank methods help us improve the accuracy of estimation while providing convenient interpretations simultaneously. Certainly there is more behind these low-rank methods. In this section, we focus on the lobe structure in particular.
 
-The lobes of the brain is an anatomical classification, which has been shown to be related to different brain functions. Basically, there are 4 different lobes for each hemisphere, i.e. Frontal, Parietal, Occipital, and Temporal.
+Classically, the brain can be divided into lobes, originally based purely on anatomical considerations, now widely recognized to also play a functional role.  While different anatomists partition brain regions differently, there is generally agreement on four cortical lobes per hemisphere: frontal, parietal, occipal, and temporal.
 For the Desikan atlas, there are 70 different regions (35 regions for each hemisphere). Each region belongs to one lobe. However, 8 regions of the Desikan atlas (Unknown, Banks of Superior Temporal Sulcus, and Corpus Callosum, for both hemispheres) do not have obvious lobe assignment. So we cluster them into a new lobe category named ``other'' to resolve this issue.
 
-Generally, the regions within the same lobe should be more similar compared to the regions across the lobes. In order to see whether the embedded latent positions $X$ preserve this property or not, we propose a test statistics $T$ to be the average differences between vertices within the same lobe minus the average differences between vertices across different lobes, i.e.
+Generally, the regions within the same lobe should be more similar compared to the regions across the lobes. To see whether the embedded latent positions $X$ preserve this property or not, we propose a test statistics $T$ to be the average differences between vertices within the same lobe minus the average differences between vertices across different lobes, i.e.
 \[
 T(X, l) = \frac{\sum_{i \ne j, l(i) = l(j)} \|X_i - X_j \|_2}{\sum_{i \ne j, l(i) = l(j)} 1} -
 \frac{\sum_{i \ne j, l(i) \ne l(j)} \|X_i - X_j \|_2}{\sum_{i \ne j, l(i) \ne l(j)} 1},
 \]
-where $l(i)$ represents the lobe assignment for vertex $i$. If the latent positions $X$ and the lobe assignment $l$ are independent, then we expect $T(X, l)$ to be close to zero. A small test statistic $T(X, l)$ indicates that latent positions of the regions within the same lobe are closer compared to the ones across the lobes, which is evidence that the low-rank methods preserves the lobe structure.
+where $l(i)$ represents the lobe assignment for vertex $i$. If the latent positions $X$ and the lobe assignment $l$ are independent, then we expect $T(X, l)$ to be close to zero. A small test statistic $T(X, l)$ indicates that latent positions of the regions within the same lobe are closer compared to the ones across the lobes.
 
-However, the anatomical geometry might contribute to the dependence between $X$ and $l$ and we do not want to be distracted by this factor. So instead of testing the dependence between $X$ and $l$, we are more interested in the following hypothesis test:
+However, the anatomical geometry might contribute to the dependence between $X$ and $l$. So a small test statistic $T(X, l)$ is evidence that the low-rank methods preserves the lobe structure only after we conditioning on anatomy geometry. We consider the hypothesis test as follows:
 
 $H_0$: $X$ and $l$ are conditionally independent given anatomical geometry.
 
 $H_A$: $X$ and $l$ are conditionally dependent given anatomical geometry.
 
-In this situation, we can focus on how much of the lobe structure is really captured by the low-rank methods without affected by the inherent spatial relationship. Note that this test is significantly underpowered compared to the test on a unconditional independence.
-To test under the anatomical geometry conditions, we permute the lobe assignment $l$ in a way that the number of regions in each lobe remain the same and the regions within the same lobe are still spatially connected. In order to permute under such constraints, we define a flip to be a swap of two pairs of vertices which keeps the number of regions in each lobe, and do it several times.
+In this situation, we can focus on how much of the lobe structure is really captured by the low-rank methods without affected by the inherent spatial relationship. Note that this test is significantly underpowered compared to the test on a unconditional independence, i.e.\ the permutations in the test is performed without any anatomical geometry constraints.
+To test under the anatomical geometry conditions, we permute the lobe assignment $l$ in a way that the number of regions in each lobe remain the same and the regions within the same lobe are still spatially connected. In order to permute under such constraints, we define a flip to be a swap of two pairs of vertices which keeps the number of regions in each lobe and also maintains the constraint that regions are geometrically adjacent, and do it several times.
 
 As mentioned before, there are 10 lobes and 70 regions based on the Desikan atlas. 
 We say two regions are adjacent if they share a common boundary. We denote such spatial adjacency by an adjacency matrix $S$ for the 70 regions, where $S_{ij} = 1$ means region $i$ and region $j$ are contain a pair of voxels, $v_i$ and $v_j$, which are spatially adjacent.
@@ -833,9 +839,9 @@ In the permutation test, we apply a uniform $k$-flip and calculate the test stat
 The $p$-value is computed as the proportion of uniform $k$-flips with a $T$ value smaller than the $T$ value for the true lobe assignments.
 
 
-For a fixed number of flips, we ran 1000 simulations and calculate the test statistics $T(X, l)$ after the permutation. We vary the number of flips from 1 to 10 and the results are shown in Figure~\ref{fig:violin_plot}. In this violin plot, we use dashed line to represent the $T(X, l)$ based on the true lobe assignment. As the number of flips increases, $T(X, l)$ converges to the expected value under the assumption that $X$ and $l$ are independent in a constrained way mentioned above. And we can see that the $T(X, l)$ according to the true lobe assignment move away from the 95\% confidence interval. We also calculate the corresponding p-values and labeled them in the figure. We can see that when the number of flips is larger than 7, the p-value is less than 0.05, which suggests that the latent positions based on the low-rank methods preserves the lobe structure regardless of the anatomical geometry.
+For a fixed number of flips, we ran 1000 simulations and calculate the test statistics $T(X, l)$ after the permutation. We vary the number of flips from 1 to 10 and the results are shown in Figure~\ref{fig:violin_plot}. In this violin plot, we use dashed line to represent the $T(X, l)$ based on the true lobe assignment. As the number of flips increases, $T(X, l)$ converges to the expected value under the assumption that $X$ and $l$ are independent in a constrained way mentioned above. And we can see that the $T(X, l)$ according to the true lobe assignment move away from the 95\% confidence interval. We also calculate the corresponding p-values and labeled them in the figure. We can see that when the number of flips is larger than 7, the p-value is less than 0.05, which suggests that latent positions in the same lobe are more similar to each other, even after accounting for the fact that geometrically proximal regions may also have similar latent positions.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./Figures/violinplot_new_flip_2norm_1_8.pdf}
 \caption[Violin plot of the permutation test]{Violin plot of the permutation test.
@@ -929,16 +935,16 @@ On the other hand, when $m$ is large enough, both estimators perform well with t
 This simulation again shows the robustness of $\hat{P}$ to deviations from the RDPG model, specifically if the probability matrix is full-rank.
 
 We also note that the finite-sample relative efficiency in these cases shows is even more favorable to $\hat{P}$, with relative efficiencies lower than $1/3$ for $m=1$, than for the real data, where relative efficiencies were at best around $1/2$ for $m=1$.
-From this observation, we can postulate that the degradation in the performance of $\hat{P}$ in real data can at least partially be attributed to the fact that the independent edge assumption does not hold for real data.
+From this observation, we can postulate that the degradation in the performance of $\hat{P}$ in real data can at least partially be attributed to the fact that the independent edge assumption does not hold for real data. And it also suggests that more elaborate models of connectomes will be valuable for various inferential tasks.
 
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./Figures/sim_desikan.pdf}
 \caption[Comparison of two estimators for synthetic data analysis]{Comparison of $\hat{P}$ and $\bar{A}$ for synthetic data analysis.
 As in Figure~\ref{fig:RE}, this figure shows $\hat{\mathrm{MSE}}$ for $\bar{A}$ (solid line) and $\hat{P}$ (dashed line) for simulated data with different sample sizes $m$ based on the sample mean for the Desikan dataset. Again, the average of dimensions selected by the USVT method (square) and the ZG method (triangle) tend to nearly approximate the optimal dimension. 
 Overall, we see that the structure of these plots well approximates the structure for the real data indicating that performance for the independent edge model will tend to translate in structure to non-independent edge scenarios. 
-On the other hand, the relative efficiency $\hat{\mathrm{RE}}(\bar{A},\hat{P})$ is lower for this synthetic data analysis than for the CoRR data.}
+On the other hand, the relative efficiency $\hat{\mathrm{RE}}(\bar{A},\hat{P})$ is lower for this synthetic data analysis than for the SWU4 data.}
 \label{fig:sim_desikan}
 \end{figure}
 

@@ -9,8 +9,8 @@ For example, \citet{ginestet2014hypothesis} proposes a method to test for a diff
 Note that this setting is more general since in Chapter~\ref{chap:llg}, estimating the mean of a collection of unweighted graphs is equivalent to estimating $\theta$ when $\mathcal{F}$ are Bernoulli distributions.
 We propose a widely-applicable, robust, low-rank estimation procedure for a collection of weighted graphs.
 
-Consider for illustration the connectome data set made available through the
-Consortium for Reliability and Reproducibility\footnote{\url{http://fcon_1000.projects.nitrc.org/indi/CoRR/html/}}
+Consider for illustration the connectome dataset ``Templeton114'' made available through the
+Neurodata\footnote{\url{http://m2g.io/}}
 and investigated in Section~\ref{sec:robust_LLG_corr_data} below.
 We have $m=114$ brain graphs, each having $n=70$ vertices representing different anatomical regions; the (errorfully observed) weight of an edge between two vertices represents the number of white-matter tracts connecting the corresponding two regions of the brain, as measured by diffusion tensor magnetic resonance imaging.
 Our goal in this situation is to estimate the average number of white-matter tracts between different regions of the brain. A more accurate estimate can lead to a better understanding of brain connectivity and hence functionality. Also, better estimates will improve performance on other tasks, such as diagnosis of brain disease.
@@ -39,7 +39,7 @@ We organize the chapter as follows. In Section~\ref{sec:robust_LLG_model}, we de
 
 In this chapter, we are in the scenario where $m$ weighted graphs on $n$ vertices are given as adjacency matrices $\{ A^{(t)} \} (t = 1, \dotsc, m)$. Again, the graphs are undirected without self-loops, i.e.\ each $A^{(t)}$ is symmetric with zeros along the diagonal. Moreover, we assume the vertex correspondence is known across different graphs, so that vertex $i$ of the $t_1$-th graph corresponds to vertex $i$ of the $t_2$-th graph for any $i \in [n]$, $t_1, t_2 \in [m]$.
 
-In practice, completely accurate data is difficult to collect -- there will almost always be noise in the observations which deviates from our general model assumptions. In order to incorporate this effect, a contamination model, the gross error model \citep{AIC:AIC690280519, bickel2007mathematical}, is considered in this work.
+In practice, completely accurate data is difficult to collect -- there will almost always be noise in the observations which deviates from our general model assumptions. In order to incorporate this effect, a contamination model, the gross error model \citep{bickel2007mathematical}, is considered in this work.
 
 Generally in a gross error model, we observe good measurement $G^* \sim f_P \in \mathcal{F}$ most of the time, while there are a few contaminated values $G^{**} \sim h_C \in \mathcal{H}$ when gross errors occur. Here $P$ and $C$ represent the respective parameter matrices of the two distribution families.
 As for graphs, one way to generalize to the gross error model is to contaminate the entire graph with some small probability $\epsilon \in (0, 1)$, that is $G \sim (1-\epsilon) f_P + \epsilon h_C$. However, since all the models we consider are subsets of the WIEM, it is more natural to consider the contamination with respect to each edge, i.e.\ for $1 \le i <  j \le n$, $G_{ij} \sim (1-\epsilon) f_{P_{ij}} + \epsilon h_{C_{ij}}$ with $f \in \mathcal{F}$ and $h \in \mathcal{H}$, where both $\mathcal{F}$ and $\mathcal{H}$ are one-parameter distribution families.
@@ -120,8 +120,10 @@ Dimension selection technique discussed in Section~\ref{sec:dim_select} and the 
 
 Given a dimension $d$, we consider $\widetilde{P}^{(1)} = \mathrm{lowrank}_d(\hat{P}^{(1)})$ as the best rank-$d$ positive semi-definite approximation of $\hat{P}^{(1)}$. To find this best approximation, first calculate the eigen-decomposition of the symmetric matrix $\hat{P}^{(1)} = \hat{U} \hat{S} \hat{U}^{\top} + \widetilde{U} \widetilde{S} \widetilde{U}^{\top}$, where $\hat{S}$ is the diagonal matrix with the largest $d$ eigenvalues of $\hat{P}^{(1)}$, and $\hat{U}$ has the corresponding eigenvectors as each column. Similarly, $\tilde{S}$ is the diagonal matrix with non-increasing entries along the diagonal corresponding to the remaining $n - d$ eigenvalues of $\hat{P}^{(1)}$, and $\tilde{U}$ has the columns given by the corresponding eigenvectors.
 The $d$-dimensional adjacency spectral embedding (ASE) of $\hat{P}^{(1)}$ is given by $\hat{X}=\hat{U} \hat{S}^{1/2}\in \mathbb{R}^{n \times d}$, which follows Definition~\ref{def:ASE}.
+The best rank-$d$ positive semi-definite approximation  $\hat{{P}}^{(1)}$ is then $\widetilde{{P}}^{(1)} = \hat{{X}} \hat{{X}}^{\top}=\hat{{U}}\hat{{S}}\hat{{U}}^{\top}$. The issue of how to select the emebdding dimesion $d$ is discussed in Section~\ref{sec:dim_select}.
 Based on the ASE result, we have the best rank-$d$ positive semi-definite approximation of $\hat{P}^{(1)}$ to be $\widetilde{P}^{(1)} = \hat{X} \hat{X}^{\top}=\hat{U}\hat{S}\hat{U}^{\top}$.
 In the RDPG setting, \citet{sussman2014consistent} proved that each row of $\hat{X}$ can accurately estimate the the latent position for each vertex up to an orthogonal transformation. We will analyze its performance under the contaminated WRDPG setting in Section \ref{sec:robust_LLG_theoretical_result}.
+In the RDPG setting, \citet{sussman2014consistent} proved that, provided that $d$ is chosen appropriately, each row of $\hat{{X}}$ can accurately estimate the the latent position for each vertex up to an orthogonal transformation. We will extend these results for $\hat{{X}}$ to the WRDPG setting in Section \ref{sec:robust_LLG_theoretical_result}.
 
 Here, we restate the algorithm given in \citep{tang2016law} (also mentioned in Chapter~\ref{chap:llg}) to give the detailed steps of computing this low-rank approximation of a general $n$-by-$n$ symmetric matrix $A$ in Algorithm~\ref{algo:robust_LLG_lowrank}.
 \begin{algorithm}[H]
@@ -137,7 +139,7 @@ Here, we restate the algorithm given in \citep{tang2016law} (also mentioned in C
 \end{algorithmic}
 \end{algorithm}
 
-By combining the key pieces introduced above, we give the detailed description for calculating the estimator $\widetilde{P}^{(1)}$ with dimension selection in Algorithm~\ref{algo:robust_LLG_basic}.
+With the dimension selection procedure as described above, the detailed description for calculating our estimator $\widetilde{\bm{P}}^{(1)}$ is then given by Algorithm~\ref{algo:robust_LLG_basic}.
 
 \begin{algorithm}[H]
 \caption{Algorithm to compute $\widetilde{P}^{(1)}$}
@@ -158,7 +160,7 @@ By combining the key pieces introduced above, we give the detailed description f
 
 \subsection{Entry-wise Maximum L$q$-likelihood Estimator $\hat{P}^{(q)}$}
 
-In the case of no contamination, the MLE is asymptotically efficient, i.e.\ when sample size is large enough, the MLE is at least as accurate as any other estimator. However, when the sample size is moderate, robust estimators can outperform the MLE in terms of mean squared error by winning the bias-variance tradeoff. Moreover, under contamination models, robust estimators can even outperform the MLE asymptotically since they are designed to be not unduly affected by outliers. We consider one robust estimator, the maximum L$q$-likelihood estimator (ML$q$E) proposed by \citet{ferrari2010maximum}.
+In the case of no contamination, the MLE is asymptotically efficient, i.e.\ when sample size is large enough, the MLE is at least as accurate as any other estimator. However, when the sample size is moderate, robust estimators can outperform the MLE in terms of mean squared error by winning the bias-variance tradeoff. Moreover, under contamination models, robust estimators can even outperform the MLE asymptotically since they are designed to be not unduly affected by outliers. We consider one such robust estimator, the maximum L$q$-likelihood estimator (ML$q$E) proposed by \citet{ferrari2010maximum}.
 
 \begin{definition} [ML$q$E]
 \label{def:MLqE}
@@ -195,6 +197,9 @@ There is also a bias-variance tradeoff in selecting the parameter $q$. \citet{qi
 Intuitively, the low-rank structure of the parameter matrix $P$ in WRDPG should be preserved approximately in the entry-wise ML$q$E $\hat{P}^{(q)}$. Thus, in order to take advantage of such low-rank structure as well as the robustness, we apply the similar idea here as in building $\widetilde{P}^{(1)}$, i.e.\ enforce a low-rank approximation on the entry-wise ML$q$E matrix $\hat{P}^{(q)}$ to get $\widetilde{P}^{(q)}$. As in Algorithm~\ref{algo:robust_LLG_basic}, we apply the same dimension selection method and diagonal augmentation procedure.
 The only change is to substitute $\hat{P}^{(1)}$ by $\hat{P}^{(q)}$. The details of the algorithm are shown in Algorithm~\ref{algo:robust_LLG_basic_q}.
 
+Intuitively, the low-rank structure of the parameter matrix ${P}$ in WRDPG should be preserved approximately in the entry-wise ML$q$E $\hat{{P}}^{(q)}$. Thus, in order to take advantage of such low-rank structure as well as the robustness, we apply the similar idea here as in building $\widetilde{{P}}^{(1)}$, i.e.\ enforce a low-rank approximation on the entry-wise ML$q$E matrix $\hat{{P}}^{(q)}$ to get $\widetilde{{P}}^{(q)}$.
+ The details of the construction of $\widetilde{{P}}^{(q)}$ are given in Algorithm~\ref{algo:robust_LLG_basic_q}. Algorithm~\ref{algo:robust_LLG_basic_q} is almost identical to that of Algorithm~\ref{algo:robust_LLG_basic} for constructing $\widetilde{{P}}^{(1)}$, the main change being the use of $\hat{{P}}^{(q)}$ in place of $\hat{{P}}^{(1)}$.
+
 \begin{algorithm}[H]
 \caption{Algorithm to compute $\widetilde{P}^{(q)}$}
 \label{algo:robust_LLG_basic_q}
@@ -220,14 +225,12 @@ The only change is to substitute $\hat{P}^{(1)}$ by $\hat{P}^{(q)}$. The details
 \section{Theoretical Results}
 \label{sec:robust_LLG_theoretical_result}
 
-In this section, for illustrative purposes, we present theoretical results for the case in which the contamination model introduced in Section~\ref{sec:robust_LLG_model} is with respect to exponential distributions. That is $\mathcal{F} = \{ f_{\theta}(x) = \frac{1}{\theta} e^{-x/\theta}, \theta \in [0, R] \subset \mathbb{R} \}$, where $R > 0$ is a constant. These results can be extended beyond the exponential under appropriate conditions, which will be discussed in Section~\ref{sec:robust_LLG_extension}.
+In this section, for illustrative purposes, we present theoretical results for the case in which the contamination model introduced in Section~\ref{sec:robust_LLG_model} is with respect to exponential distributions. That is $\mathcal{F} = \{ f_{\theta}(x) = \exp(-x/\theta)/{\theta}, \theta \in [0, R] \subset \mathbb{R} \}$, where $R > 0$ is a constant. These results can be extended beyond the exponential under appropriate conditions, which will be discussed in Section~\ref{sec:robust_LLG_extension}.
 
 For clarity, we restate the model settings discussed in Section~\ref{sec:robust_LLG_model}. Consider the WSBM with parameters $B$ and $\rho$. First we sample the block membership $\tau$ from the categorical distribution with parameter $\rho$ and keep it fixed for all $m$ graphs. Conditioned on this $\tau$, the uncontaminated probability matrix $P$  satisfies $P_{ij} = B_{\tau_i, \tau_j}$. In this section, we assume the contamination has the same block membership $\tau$, and so the contamination matrix $C \in \mathbb{R}^{n \times n}$ has the same block structure as $P$.  Denote $\epsilon$ as the probability that an edge is contaminated. Then $m$ symmetric graphs $G^{(1)}, \dotsc, G^{(m)}$  are sampled such that conditioning on $\tau$, the adjacency matrices are distributed entry-wise independently as $A^{(t)}_{ij} \stackrel{ind}{\sim} (1-\epsilon) f_{P_{ij}} + \epsilon f_{C_{ij}}$ for each $1 \le t \le m$, $1 \le i < j \le n$. 
 Note that our theoretical results do not require the contamination to have the same block structure and block membership $\tau$ as the uncontaminated probability matrix; different block structure will lead to similar results -- but require higher embedding dimension -- since the rank of $(1-\epsilon) P_{ij} + \epsilon C_{ij}$ is still finite.
 
-In the setting outlined above, we now analyze the performance of all four estimators introduced in Section~\ref{sec:robust_LLG_estimator} based on $m$ adjacency matrices for estimating the probability matrix $P$ in terms of the mean squared error. When comparing two estimators, we mainly focus on both asymptotic bias and asymptotic variance. Note that all the results in this section are entry-wise, which easily leads to the result for the total MSE for the entire matrix.
-
-We present the main results in this section. The proofs are given in Section~\ref{sec:robust_LLG_proof}.
+In the setting outlined above, we now analyze the performance of all four estimators introduced in Section~\ref{sec:robust_LLG_estimator} based on $m$ adjacency matrices for estimating the probability matrix $P$ in terms of the mean squared error. When comparing two estimators, we mainly focus on both asymptotic bias and asymptotic variance. Note that all the results in this section are entry-wise, which easily leads to the result for the total MSE for the entire matrix. We present the main results in this section. Additional results and proofs of stated results are given in Section~\ref{sec:robust_LLG_proof}.
 
 
 \subsection[MLE vs. MLqE]{$\hat{P}^{(1)}$ vs. $\hat{P}^{(q)}$}
@@ -239,13 +242,14 @@ We first compare the performance between the entry-wise MLE $\hat{P}^{(1)}$ and 
 \label{thm:MLEvsMLqE}
 %\label{lemma:ELqlEMLE}
 %\label{lemma:VarLqlVarMLE}
-For any $0 < q < 1$, there exists $C_0(P_{ij}, \epsilon, q) > 0$ such that under the contaminated model with $C_{ij} > C_0(P_{ij}, \epsilon, q)$, ML$q$E has smaller entry-wise asymptotic bias compared to MLE, i.e.\
+%For any $0 < q < 1$, there exists $C_0(P_{ij}, \epsilon, q) > 0$ such that under the contaminated model with $C_{ij} > C_0(P_{ij}, \epsilon, q)$, ML$q$E has smaller entry-wise asymptotic bias compared to MLE, i.e.\
+For any $0 < q < 1$ and any ${P}$, there exists a constant $C_0(\epsilon, q) > 0$ depending only on $\epsilon$, $q$, and $\max_{ij} {P}_{ij}$ such that under the contaminated model ${A}_{ij}^{(t)} \sim (1 - \epsilon) f_{{P}_{ij}} + \epsilon f_{{C}_{ij}}$ with ${C}_{ij} > C_0(\epsilon, q)$ for all $i,j$ ML$q$E has smaller entry-wise asymptotic bias compared to MLE, i.e.\
 \[
 	\lim_{m \to \infty} \left| E[\hat{P}^{(q)}_{ij}] - P_{ij} \right| < 
     \lim_{m \to \infty} \left| E[\hat{P}^{(1)}_{ij}] - P_{ij} \right|,
 \]
 for $1 \le i, j \le n$ and $i \ne j$.
-Moreover, without any assumptions on the contaminated model, for $1 \le i, j \le n$, 
+Moreover, for any $\epsilon \geq 0$ and any $q$,
 \[
 	\mathrm{Var}(\hat{P}^{(1)}_{ij})
     = \mathrm{Var}(\hat{P}^{(q)}_{ij}) = O(1/m).
@@ -257,11 +261,11 @@ And thus
 \]
 \end{theorem}
 
-Theorem~\ref{thm:MLEvsMLqE} shows that the entry-wise ML$q$E $\hat{P}^{(q)}$ has smaller bias for estimating $P$ asymptotically compared to the entry-wise MLE $\hat{P}^{(1)}$. Although we put restrictions on the contamination matrix $C$ in the statement of the theorem, the result still holds provided that $\epsilon (C_{ij} - P_{ij}) > (1 - q) P_{ij}$. This condition requires only that the contamination of the model is large enough (either large contamination parameter matrix, or higher likelihood of encountering an outlier). From a different perspective, by putting a condition on $q$ with respect to the amount of contamination, it also requires $\hat{P}^{(q)}$ to be robust enough with respect to the contamination. Thus besides the current condition for $C$, equivalently, we can also replace it by the assumption of a large enough $\epsilon$ or a small enough $q$.
+Theorem~\ref{thm:MLEvsMLqE} shows that the entry-wise ML$q$E $\hat{P}^{(q)}$ has smaller bias for estimating $P$ asymptotically compared to the entry-wise MLE $\hat{P}^{(1)}$. Although we put restrictions on the contamination matrix $C$ in the statement of the theorem, the result still holds provided that $\epsilon (C_{ij} - P_{ij}) > (1 - q) P_{ij}$ for all $i,j$. This condition can be interpreted as only requiring that the contamination of the model is large enough (either large contamination parameter matrix, or higher likelihood of encountering an outlier). From a different perspective, by putting a condition on $q$ with respect to the amount of contamination, the above condition also corresponds to only requiring that $\hat{{P}}^{(q)}$ be robust enough with respect to the contamination. Thus besides the current condition for ${C}$, equivalently, we can also replace it by the assumption of a large enough $\epsilon$ or a small enough $q$.
 
 Theorem~\ref{thm:MLEvsMLqE} also indicates that both estimators have variances converging to zero as the number of graphs $m$ goes to infinity, following the asymptotic properties of minimum contrast estimates. Thus the bias term will dominate in the comparison in terms of MSE.
 
-As a result, $\hat{P}^{(q)}$ asymptotically reduces the bias while keeping the variance the same compared to $\hat{P}^{(1)}$. Thus in terms of MSE, $\hat{P}^{(q)}$ is a better estimator than $\hat{P}^{(1)}$ when the number of graphs $m$ is large with enough contamination.
+As a result, $\hat{P}^{(q)}$ asymptotically reduces the bias while keeping the variance asymptotically the same compared to $\hat{P}^{(1)}$. Thus in terms of MSE, $\hat{P}^{(q)}$ is a better estimator than $\hat{P}^{(1)}$ when the number of graphs $m$ is large with enough contamination.
 
 \subsection[MLE vs. ASE of MLE]{$\hat{P}^{(1)}$ vs. $\widetilde{P}^{(1)}$}
 We next analyze the effect of the ASE procedure applied to the entry-wise MLE $\hat{P}^{(1)}$ under the contamination model, so that we can compare the performance between $\hat{P}^{(1)}$ and $\widetilde{P}^{(1)}$.
@@ -276,38 +280,37 @@ For any parameter $\theta$ of a distribution $f$, and for estimators $\hat{\thet
 
 By the definition above, if $\mathrm{ARE}(\hat{\theta}^{(2)}, \hat{\theta}^{(1)}) < 1$, then $\hat{\theta}^{(1)}$ has a smaller variance in its sampling distribution and thus is more efficient compared to $\hat{\theta}^{(2)}$. Combine with the fact that both estimators have the same asymptotic bias, we conclude that $\hat{\theta}^{(1)}$ is a better estimate in this case.
 
-To compare $\hat{P}^{(1)}$ and $\widetilde{P}^{(1)}$, we will first show they have the same entry-wise asymptotic bias under appropriate conditions, and then use the ARE criterion to compare the performance in the following theorem.
+To compare $\hat{P}^{(1)}$ and $\widetilde{P}^{(1)}$, we first show that they have the same entry-wise asymptotic bias and then use the ARE criterion to compare their performance in the following theorem.
 
 \begin{theorem}
 \label{thm:MLEvsMLEASE}
 %\label{lm:L1Consistent}
 %\label{thm:VarASEL1}
 %\label{thm:AREL1}
-Assuming that $m = O(n^b)$ for any $b > 0$, then the estimator based on ASE of MLE has the same entry-wise asymptotic bias as MLE, i.e.\
+Assuming that $m = O(n^b)$ for any $b > 0$, then $\widetilde{{P}}^{(1)}$, the estimator based on the ASE of the entrywise MLE $\hat{{P}}$, has the same entry-wise asymptotic bias as $\hat{{P}}^{(1)}$, i.e.\
 \[
-	\lim_{n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(1)}) = \lim_{n \to \infty} E[\widetilde{P}_{ij}^{(1)}] - P_{ij} = \lim_{n \to \infty} E[\hat{P}^{(1)}_{ij}] - P_{ij}
-    = \lim_{n \to \infty} \mathrm{Bias}(\hat{P}_{ij}^{(1)}).
+	\lim_{n \to \infty} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(1)}) = \lim_{n \to \infty} E[\widetilde{{P}}_{ij}^{(1)}] - {P}_{ij} = \lim_{n \to \infty} E[\hat{{P}}^{(1)}_{ij}] - {P}_{ij}
+    = \lim_{n \to \infty} \mathrm{Bias}(\hat{{P}}_{ij}^{(1)}).
 \]
 In addition, for $1 \le i, j \le n$ and $i \ne j$,
 \[
-	\mathrm{Var}(\widetilde{P}_{ij}^{(1)}) = O(m^{-1} n^{-1} (\log n)^3),
-	\mathrm{Var}(\hat{P}_{ij}^{(1)}) = O(m^{-1}).
+	\mathrm{Var}(\widetilde{{P}}_{ij}^{(1)}) = O(m^{-1} n^{-1} (\log n)^3),
+	\mathrm{Var}(\hat{{P}}_{ij}^{(1)}) = O(m^{-1}).
 \]
-And thus
+Thus
 \[
-	\frac{\mathrm{Var}(\widetilde{P}_{ij}^{(1)})}{\mathrm{Var}(\hat{P}_{ij}^{(1)})}
-    = O(n^{-1} (\log n)^3),
+	\frac{\mathrm{Var}(\widetilde{{P}}_{ij}^{(1)})}{\mathrm{Var}(\hat{{P}}_{ij}^{(1)})}
+    = O(n^{-1} (\log n)^3); \qquad
+	\mathrm{ARE}(\hat{{P}}_{ij}^{(1)}, \widetilde{{P}}_{ij}^{(1)}) = 0.
 \]
-\[
-	\mathrm{ARE}(\hat{P}_{ij}^{(1)}, \widetilde{P}_{ij}^{(1)}) = 0.
-\]
+for all $1 \leq i < j \leq n$.
 \end{theorem}
 
 Theorem~\ref{thm:MLEvsMLEASE} says that when % $m$ is a constant, or $m$ is going to infinity with order $m = O(n^b)$ for any $b > 0$, i.e.\
-$m$ is fixed or grows no faster than any polynomial with respect to $n$, the ASE procedure applied to $\hat{P}^{(1)}$ will not affect the asymptotic bias for estimating $P$.
-Combined with the fact that the ratio of the variances of the two estimators is of order $O(n^{-1} (\log n)^3)$, we have that ARE is 0.
-%goes to 0 when $n \to \infty$. 
-Thus $\widetilde{P}_{ij}^{(1)}$ is much better than $\hat{P}_{ij}^{(1)}$ for large $n$. We emphasize that the order of the ratio of the variances does not depend on $m$.
+$m$ is fixed or grows no faster than any polynomial with respect to $n$, the ASE procedure applied to $\hat{{P}}^{(1)}$ will not affect the asymptotic bias for estimating ${P}$.
+Combined with the fact that the ratio of the variances of the two estimators is of order $O(n^{-1} (\log n)^3)$, we have that the ARE of $\widetilde{{P}}_{ij}^{(1)}$ to that of $\hat{{P}}_{ij}^{(1)}$ is $0$.
+%goes to 0 when $n \to \infty$.
+Thus $\widetilde{{P}}_{ij}^{(1)}$ is a better estimate of ${P}_{ij}$ than $\hat{{P}}_{ij}^{(1)}$ for large $n$. We emphasize that the order of the ratio of the variances does not depend on $m$.
 
 As a result, the ASE procedure applied to the entry-wise MLE $\hat{P}^{(1)}$ helps reduce the variance while keeping the bias unchanged asymptotically, leading to a better estimate $\widetilde{P}^{(1)}$ for $P$ in terms of MSE.
 
@@ -316,7 +319,7 @@ As a result, the ASE procedure applied to the entry-wise MLE $\hat{P}^{(1)}$ hel
 
 \subsection[MLqE vs. ASE of MLqE]{$\hat{P}^{(q)}$ vs. $\widetilde{P}^{(q)}$}
 
-We now proceed to analyze the effect of the ASE procedure applied to the entry-wise ML$q$E $\hat{P}^{(q)}$ under the contamination model in order to compare the performance between $\hat{P}^{(q)}$ and $\widetilde{P}^{(q)}$. Similarly, we first show that the two estimators have the same entry-wise asymptotic bias under appropriate conditions, and then use the ARE criterion to compare the performance in the following theorem.
+We now proceed to analyze the effect of the ASE procedure applied to the entry-wise ML$q$E $\hat{{P}}^{(q)}$ under the gross error contamination model in order to compare the performance between $\hat{{P}}^{(q)}$ and $\widetilde{{P}}^{(q)}$. Similarly, we first show that the two estimators have the same entry-wise asymptotic bias under appropriate conditions, and then use the ARE criterion to compare their performance in the following theorem.
 
 \begin{theorem}
 \label{thm:MLqEvsMLqEASE}
@@ -328,12 +331,12 @@ Assuming that $m = O(n^b)$ for any $b > 0$, then the estimator based on ASE of M
 	\lim_{n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(q)}) = \lim_{n \to \infty} E[\widetilde{P}_{ij}^{(q)}] - P_{ij} = \lim_{n \to \infty} E[\hat{P}^{(q)}_{ij}] - P_{ij}
     = \lim_{n \to \infty} \mathrm{Bias}(\hat{P}_{ij}^{(q)}).
 \]
-In addition, for $1 \le i, j \le n$ and $i \ne j$,
+In addition, for $1 \le i < j \le n$ and $i \ne j$,
 \[
 	\mathrm{Var}(\widetilde{P}_{ij}^{(q)}) = O(n^{-1} (\log n)^3),
 	\mathrm{Var}(\hat{P}_{ij}^{(q)}) = O(m^{-1}).
 \]
-And thus
+Thus
 \[
 	\frac{\mathrm{Var}(\widetilde{P}_{ij}^{(q)})}{\mathrm{Var}(\hat{P}_{ij}^{(q)})}
     = O(m n^{-1} (\log n)^3).
@@ -344,43 +347,46 @@ Moreover, if $m = o(n (\log n)^{-3})$, then
 \]
 \end{theorem}
 
-The proof for Theorem~\ref{thm:MLqEvsMLqEASE} is almost the same as the proof for Theorem~\ref{thm:MLEvsMLEASE}. But unlike the results for MLE, we are missing the term $m^{-1}$ in the variance bound $\mathrm{Var}(\widetilde{P}^{(q)}) = O(n^{-1} (\log n)^3)$ due to the structure of maximum L$q$ likelihood equation. As a result, while the ASE procedure still does not affect the asymptotic bias, the ratio of variances has an extra term $m$. This leads to a slight difference in the comparison. Specifically, when $m$ is fixed, the order of the ratio of variances is $O(n^{-1} (\log n)^3)$, which goes to 0 as $n \to \infty$. Even if $m$ also increases as $n$ increases, as long as it grows on the order of $o(n (\log n)^{-3})$, the ARE is still 0. 
+The proof for Theorem~\ref{thm:MLqEvsMLqEASE} is almost the same as the proof for Theorem~\ref{thm:MLEvsMLEASE}. But unlike the results for comparing $\widetilde{{P}}^{(1)}$, we are missing the term $m^{-1}$ in the variance bound for $\mathrm{Var}(\widetilde{{P}}^{(q)}) = O(n^{-1} (\log n)^3)$ for arbitrary $q$ due to the structure of maximum L$q$ likelihood equation. As a result, while the ASE procedure to obtain $\widetilde{{P}}^{(q)}$ still does not affect the asymptotic bias compared to $\hat{{P}}^{(q)}$, the ratio of variances for $\widetilde{{P}}^{(q)}$ and $\hat{{P}}^{(q)}$  has an extra term $m$ compared to the ratio of variances for $\widetilde{{P}}^{(1)}$ and $\hat{{P}}^{(1)}$. This leads to some difference in the conclusion of Theorem~\ref{thm:MLqEvsMLqEASE} compared to that of Theorem~\ref{thm:MLEvsMLEASE}. Specifically, when $m$ is fixed, the order of the ratio of the variances of $\widetilde{{P}}^{(q)}$ and $\hat{{P}}^{(q)}$
+is $O(n^{-1} (\log n)^3)$, which converges to $0$ as $n \to \infty$. If $m$ also increases as $n$ increases, then provided that $m$ grows on the order of $o(n (\log n)^{-3})$, the ARE of $\widetilde{{P}}^{(q)}$ and $\hat{{P}}^{(q)}$ still converges to $0$. 
 
-Thus the ASE procedure applied to the entry-wise ML$q$E $\hat{P}^{(q)}$ also helps reduce the variance while keeping the bias asymptotically, leading to a better estimate $\widetilde{P}^{(q)}$ for $P$ in terms of MSE.
+Thus the ASE procedure applied to the entry-wise ML$q$E $\hat{{P}}^{(q)}$ also helps reduce the variance while keeping the same bias asymptotically, leading to a better estimate $\widetilde{{P}}^{(q)}$ for ${P}$ in terms of MSE.
 
 %\begin{remark}
 %Similar to Remark~\ref{remark:var1}, we prove the theorems above based on the modified estimator $\min(\widetilde{P}^{(q)}, \alpha \hat{P}^{(q)})$ entry-wise for any constant $\alpha > 0$. This modification is simply for the proof and is not included in algorithms or empirical results.
 %\end{remark}
 
-\subsection[MLE vs. ASE of MLqE]{$\widetilde{P}^{(1)}$ vs. $\widetilde{P}^{(q)}$}
+\subsection[ASE of MLE vs. ASE of MLqE]{$\widetilde{P}^{(1)}$ vs. $\widetilde{P}^{(q)}$}
 
-To finish the last piece, we compare the performance between $\widetilde{P}^{(1)}$ and $\widetilde{P}^{(q)}$ by combining the previous results.
+Finally, we compare the performance between $\widetilde{{P}}^{(1)}$ and $\widetilde{{P}}^{(q)}$ by combining the previous results.
 
 \begin{theorem}
 \label{thm:MLEASEvsMLqEASE}
 %\label{thm:biasL1andLq}
 %\label{thm:varianceL1andLq}
-For sufficiently large $C$ and any $1 \le i,j \le n$, if $m = O(n^b)$ for any $b > 0$, then the estimator based on ASE of ML$q$E has smaller entry-wise asymptotic bias compared to the estimator based on ASE of MLE, i.e.\
+For sufficiently large values of $\{{C}_{ij}\}$ and any $1 \le i,j \le n$, if $m = O(n^b)$ for any $b > 0$, then the estimator based on ASE of ML$q$E has smaller entry-wise asymptotic bias compared to the estimator based on ASE of MLE, i.e.\
 \[
-	\lim_{m, n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(1)})
-    > \lim_{m, n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(q)})
+	\lim_{n \to \infty} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(1)})
+    > \lim_{n \to \infty} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(q)})
 \]
-Moreover, if $m = O(n (\log n)^{-3})$, then
+Moreover, if $m = O(n^b)$ for any $b > 0$, then
 \[
-	\lim_{m, n \to \infty} \mathrm{Var}(\widetilde{P}_{ij}^{(1)})
-    = \lim_{m, n \to \infty} \mathrm{Var}(\widetilde{P}_{ij}^{(q)}) = 0.
+	\lim_{n \to \infty} \mathrm{Var}(\widetilde{{P}}_{ij}^{(1)})
+    = \lim_{n \to \infty} \mathrm{Var}(\widetilde{{P}}_{ij}^{(q)}) = 0.
 \]
 \end{theorem}
 
 Theorem~\ref{thm:MLEASEvsMLqEASE} is a direct result of Theorem~\ref{thm:MLEvsMLqE}, Theorem~\ref{thm:MLEvsMLEASE}, and Theorem~\ref{thm:MLqEvsMLqEASE}.
-It concludes that $\widetilde{P}^{(q)}$ inherits the robustness from the entry-wise ML$q$E $\hat{P}^{(q)}$ and has a smaller asymptotic bias compared to $\widetilde{P}^{(1)}$ while both estimates have variance going to 0 as $m \to \infty$. Thus in summary, $\widetilde{P}^{(q)}$ is the best among all four estimators.
+It concludes that $\widetilde{{P}}^{(q)}$ inherits the robustness from the entry-wise ML$q$E $\hat{{P}}^{(q)}$ and has a smaller asymptotic bias compared to $\widetilde{{P}}^{(1)}$ while both estimates have variance going to 0 as $n \to \infty$. Thus $\widetilde{{P}}^{(q)}$ is a better estimator than both $\widetilde{{P}}^{(1)}$ and $\hat{{P}}^{(1)}$. Finally, if $m = o(n (\log n)^{-3})$, then by Theorem~\ref{thm:MLqEvsMLqEASE}, $\widetilde{{P}}^{(q)}$ is also better than $\hat{{P}}^{(q)}$ and hence is the best estimator among all four estimators.
 
-\subsection{Summary}
+
+\subsection{Summary of our Four Estimators}
 We summarize all four estimators and their relationships in Figure~\ref{fig:summary}.
 From top to bottom in the figure, we apply ASE to construct low-rank approximations which preserve the asymptotic bias and reduce the asymptotic variance. From left to right, we underweight the outliers to construct robust estimators, so with enough contamination, whenever the number of graphs $m$ is large enough, the bias term which dominates the MSE will be improved.
 Thus in Figure~\ref{fig:summary} we have quantified the qualitative roadmap introduced in Figure~\ref{fig:roadmap}.
+We will evaluate these four estimators on simulated and real data experiment in Section~\ref{sec:robust_LLG_simulation} and Section~\ref{sec:robust_LLG_corr_data}.
 
-In conclusion, when contamination is sufficiently large, $\widetilde{P}^{(q)}$ is the best among the four estimators for large enough $n$ and $m$.
+
 
 \begin{figure}
 \begin{center}
@@ -399,23 +405,23 @@ In conclusion, when contamination is sufficiently large, $\widetilde{P}^{(q)}$ i
 
   % Position the nodes using a matrix layout
   \matrix{
-    \node[block] (MLE) {$\hat{P}^{(1)}$};
-      \& \& \& \node[block] (MLqE) {$\hat{P}^{(q)}$};\\
+    \node[block] (MLE) {$\hat{{P}}^{(1)}$};
+      \& \& \& \node[block] (MLqE) {$\hat{{P}}^{(q)}$};\\
 	\\
-    \node[block] (XMLE) {$\widetilde{P}^{(1)}$};
-      \& \& \& \node[block] (XMLqE) {$\widetilde{P}^{(q)}$}; \\
+    \node[block] (XMLE) {$\widetilde{{P}}^{(1)}$};
+      \& \& \& \node[block] (XMLqE) {$\widetilde{{P}}^{(q)}$}; \\
   };
 
   % Draw the arrows between the nodes and label them.
-  \draw[tofrom] (MLE) -- node[midway,above] {$\mathrm{For}$ $\mathrm{sufficiently}$ $\mathrm{large}$ $C$, $\mathrm{for}$ $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{m \to \infty}{\lim} \mathrm{Bias}^2(\hat{P}_{ij}^{(1)}) > \underset{m \to \infty}{\lim} \mathrm{Bias}^2(\hat{P}_{ij}^{(q)})$}
-      node[midway,below] {$\underset{m \to \infty}{\lim} \mathrm{Var}(\hat{P}_{ij}^{(1)}) = \underset{m \to \infty}{\lim} \mathrm{Var}(\hat{P}_{ij}^{(q)}) = 0$} (MLqE);
-  \draw[tofrom] (MLE) -- node[midway,left] {$\mathrm{For}$ $\mathrm{any}$ $\mathrm{fixed}$ $m$, $\mathrm{or}$ \\ $m = O(n^b)$ $\mathrm{for}$ $b>0$, \\$\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\hat{P}_{ij}^{(1)}) =$\\$ \underset{n \to \infty}{\lim} \mathrm{Bias}(\widetilde{P}_{ij}^{(1)})$\\$\mathrm{Var}(\widetilde{P}_{ij}^{(1)})/\mathrm{Var}(\hat{P}_{ij}^{(1)})$\\$ = O(n^{-1} (\log n)^3)$} (XMLE);
-  \draw[tofrom] (MLqE) -- node[midway,right] {$\mathrm{For}$ $\mathrm{any}$ $\mathrm{fixed}$ $m$, $\mathrm{or}$ \\ $m = O(n^b)$ $\mathrm{for}$ $b>0$, \\$\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\hat{P}_{ij}^{(q)}) = $\\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\widetilde{P}_{ij}^{(q)})$\\$\mathrm{Var}(\widetilde{P}_{ij}^{(q)})/\mathrm{Var}(\hat{P}_{ij}^{(q)})$\\$= O(m n^{-1} (\log n)^3)$} (XMLqE);
-  \draw[tofrom] (XMLE) -- node[midway,above] {$\mathrm{For}$ $\mathrm{sufficiently}$ $\mathrm{large}$ $C$, \\$\mathrm{if}$ $m = O(n^b)$  $\mathrm{for}$ $b>0$, $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{m, n \to \infty}{\lim} \mathrm{Bias}^2(\widetilde{P}_{ij}^{(1)}) > \underset{m, n \to \infty}{\lim} \mathrm{Bias}^2(\widetilde{P}_{ij}^{(q)})$}
-      node[midway,below] {$\mathrm{If}$ $m = O(n (\log n)^{-3})$, $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{m, n \to \infty}{\lim} \mathrm{Var}(\widetilde{P}_{ij}^{(1)}) = \underset{m, n \to \infty}{\lim} \mathrm{Var}(\widetilde{P}_{ij}^{(q)}) = 0$} (XMLqE);
+  \draw[tofrom] (MLE) -- node[midway,above] {$(a)$\\$\mathrm{For}$ $\mathrm{sufficiently}$ $\mathrm{large}$ $\mathrm{values}$ $\mathrm{of}$ $\{{C}_{ij}\}$, \\$\mathrm{and}$ $\mathrm{for}$ $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{m \to \infty}{\lim} \mathrm{Bias}^2(\hat{{P}}_{ij}^{(1)}) > \underset{m \to \infty}{\lim} \mathrm{Bias}^2(\hat{{P}}_{ij}^{(q)})$}
+      node[midway,below] {$\underset{m \to \infty}{\lim} \mathrm{Var}(\hat{{P}}_{ij}^{(1)}) = \underset{m \to \infty}{\lim} \mathrm{Var}(\hat{{P}}_{ij}^{(q)}) = 0$} (MLqE);
+  \draw[tofrom] (MLE) -- node[midway,left] {$(b)$\\$\mathrm{For}$ $\mathrm{any}$ $\mathrm{fixed}$ $m$, $\mathrm{or}$ \\ $m = O(n^b)$ $\mathrm{for}$ $b>0$, \\$\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\hat{{P}}_{ij}^{(1)}) =$\\$ \underset{n \to \infty}{\lim} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(1)})$\\$\mathrm{Var}(\widetilde{{P}}_{ij}^{(1)})/\mathrm{Var}(\hat{{P}}_{ij}^{(1)})$\\$ = O(n^{-1} (\log n)^3)$} (XMLE);
+  \draw[tofrom] (MLqE) -- node[midway,right] {$(c)$\\$\mathrm{For}$ $\mathrm{any}$ $\mathrm{fixed}$ $m$, $\mathrm{or}$ \\ $m = O(n^b)$ $\mathrm{for}$ $b>0$, \\$\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\hat{{P}}_{ij}^{(q)}) = $\\$\underset{n \to \infty}{\lim} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(q)})$\\$\mathrm{Var}(\widetilde{{P}}_{ij}^{(q)})/\mathrm{Var}(\hat{{P}}_{ij}^{(q)})$\\$= O(m n^{-1} (\log n)^3)$} (XMLqE);
+  \draw[tofrom] (XMLE) -- node[midway,above] {$(d)$\\$\mathrm{For}$ $\mathrm{sufficiently}$ $\mathrm{large}$ $\mathrm{values}$ $\mathrm{of}$ $\{{C}_{ij}\}$, \\$\mathrm{if}$ $m = O(n^b)$  $\mathrm{for}$ $b>0$, $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Bias}^2(\widetilde{{P}}_{ij}^{(1)}) > \underset{n \to \infty}{\lim} \mathrm{Bias}^2(\widetilde{{P}}_{ij}^{(q)})$}
+      node[midway,below] {$\mathrm{If}$ $m = O(n^b)$  $\mathrm{for}$ $b>0$, $\mathrm{any}$ $1 \le i, j \le n$, \\$\underset{n \to \infty}{\lim} \mathrm{Var}(\widetilde{{P}}_{ij}^{(1)}) = \underset{n \to \infty}{\lim} \mathrm{Var}(\widetilde{{P}}_{ij}^{(q)}) = 0$} (XMLqE);
 \end{tikzpicture}
 \end{center}
-\caption[Relationship among four estimators]{\label{fig:summary}Relationship among four estimators.}
+\caption[Relationships among our four estimators]{\label{fig:summary}Relationships among our four estimators.}
 \end{figure}
 
 
@@ -428,11 +434,11 @@ In conclusion, when contamination is sufficiently large, $\widetilde{P}^{(q)}$ i
 \section{Extensions}
 \label{sec:robust_LLG_extension}
 
-Results in Section~\ref{sec:robust_LLG_theoretical_result} are presented in the setting of exponential distributions with the ML$q$E estimator. However, these results can be generalized to a broader class of distribution families, and to a different entry-wise robust estimator (denoted as $\hat{P}^{(R)}$) other than ML$q$E, provided that the following conditions are satisfied:
+The results in Section~\ref{sec:robust_LLG_theoretical_result} are presented in the specific setting of the exponential distribution and the robust ML$q$E estimator. These results, however, can also be generalized to a broader class of distribution families and/or  different entry-wise robust estimators (denoted as $\hat{{P}}^{(R)}$), provided that the following conditions are satisfied:
 \begin{enumerate}
 \item Letting $A_{ij} \stackrel{ind}{\sim} (1-\epsilon) f_{P_{ij}} + \epsilon f_{C_{ij}}$, then we require $f_\theta$ to satisfy $E[(A_{ij} - E[\hat{P}_{ij}^{(1)}])^k] \le \mathrm{const}^k \cdot k!$, where $\hat{P}^{(1)}$ is the entry-wise MLE as defined before;
 %$E[\hat{P}_{ij}^{(1)}] = (1-\epsilon) E_f(P_{ij}) + \epsilon E_f(C_{ij})$;
-\item There exists $C_0(P_{ij}, \epsilon) > 0$ such that under the contaminated model with $C > C_0(P_{ij}, \epsilon)$,
+\item There exists $C_0(P_{ij}, \epsilon) > 0$ such that under the contaminated model with $C_{ij} > C_0(P_{ij}, \epsilon)$,
 \[
 	\lim_{m \to \infty} \left| E[\hat{P}^{(R)}_{ij}] - P_{ij} \right| < 
     \lim_{m \to \infty} \left| E[\hat{P}^{(1)}_{ij}] - P_{ij} \right|;
@@ -441,15 +447,13 @@ Results in Section~\ref{sec:robust_LLG_theoretical_result} are presented in the 
 \item $\mathrm{Var}(\hat{P}^{(R)}_{ij}) = O(m^{-1})$, where $m$ is the number of graph observations.
 \end{enumerate}
 
+Condition~1 is to ensure that the observations ${A}_{ij}$ does not deviate too far from their expectation so that Bernstein-like concentration inequalities can be applied. 
+Condition~2 is similar to that used in Section \ref{section:MLEvsMLqE}; in particular, it assumes that the contamination of the model is large enough (a restriction on the distribution) and/or $\hat{{P}}^{(R)}$ is sufficiently robust with respect to the contamination (a condition on the estimator).
+By taking advantage of Condition~1 which controls $\hat{{P}}^{(1)}$, Condition~3 allows one to derive Bernstein-like concentration inequalities for $\hat{{P}}^{(R)}$.
+Condition~4 ensures that the variance of $\hat{{P}}^{(R)}_{ij}$ is comparable to the variance of the entry-wise MLE $\hat{{P}}^{(1)}_{ij}$, which is of order $O(m^{-1})$. (Note that in the absence of Condition~4, similar but weaker results can still be derived.)
 
-Condition 1 is to ensure that observations will not deviate too far from the expectation so that the concentration inequalities hold.
-Condition 2 is discussed in Section \ref{section:MLEvsMLqE} and requires the contamination of the model to be large enough (a restriction on the distribution) and $\hat{P}^{(R)}$ to be sufficiently robust with respect to the contamination (a condition on the estimator).
-By taking advantage of Condition 1 which controls $\hat{P}^{(1)}$, Condition 3 reuses Condition 1 to bound an arbitrary $\hat{P}^{(R)}$.
-Condition 4 is to ensure that the variance of $\hat{P}^{(R)}_{ij}$ is comparable to the variance of the entry-wise MLE $\hat{P}^{(1)}_{ij}$, which is of order $O(m^{-1})$. (Note that in the absence of Condition 4, similar but weaker results can still be derived.)
 
-
-As an example of a (distribution, robust estimator)-pair satisfying the above four conditions, other than (exponential distribution, ML$q$E) as presented above in Section~\ref{sec:robust_LLG_theoretical_result}, we sketch the proof that the (Poisson distribution, ML$q$E) satisfies. The Poisson distribution is a commonly used distribution for nonnegative graphs with integer weights. Lemma~\ref{lm:poisson} verifies Condition 1; intuitively, since the exponential distribution has a fatter tail compared to the Poisson, we should have the bound for the central moment of the Poisson directly from the results for the exponential distribution. Condition 2 is satisfied when we use the ML$q$E with the Poisson. For Condition 3, $\hat{P}^{(R)}_{ij}/\hat{P}^{(1)}_{ij}$ is maximized when there are $m$ data points $x_1, \cdots, x_m$ with $0 \le x_1 = \cdots = x_k \le \bar{x} \le x_{k+1} = \cdots = x_m \le m \bar{x}/(m - k)$. In order to have ML$q$E larger than MLE $\bar{x}$, we need the weights of the first $m$ data points to be smaller than the weights of the remaining $m - k$ points. Thus $e^{-\bar{x}} < \bar{x}^{x_m} e^{-\bar{x}} / x_m!$. But then $x_m! < \bar{x}^{x_m}$. By the lower bound in Stirling's formula, we have $x_m < e \bar{x}$ when $x_m > 0$. Note that if $x_m = 0$ then MLE equals ML$q$E since all data points equal zero. Thus ML$q$E is bounded by $e \bar{x}$. As a result, $\hat{P}_{ij} \le e \hat{P}_{ij}^{(1)}$ and Condition 3 is satisfied. Finally, Condition 4 follows directly from the theory of minimum contrast estimators.
-
+As an example to clarify the above four conditions, we sketch the argument that the results of Section~\ref{sec:robust_LLG_theoretical_result} also holds for the Poisson distribution when the entry-wise ML$q$E estimator is used. The Poisson distribution is a commonly used distribution for nonnegative graphs with integer weights. Lemma~\ref{lm:poisson} verifies Condition~1; intuitively, since the exponential distribution has a fatter tail compared to the Poisson, we should have the bound for the central moment of the Poisson directly from the results for the exponential distribution. Condition~2 is satisfied when we use the ML$q$E with the Poisson. For Condition~3, $\hat{{P}}^{(R)}_{ij}/\hat{{P}}^{(1)}_{ij}$ is maximized when there are $m$ data points $x_1, \cdots, x_m$ with $0 \le x_1 = \cdots = x_k \le \bar{x} \le x_{k+1} = \cdots = x_m \le m \bar{x}/(m - k)$. In order to have ML$q$E larger than MLE $\bar{x}$, we need the weights of the first $m$ data points to be smaller than the weights of the remaining $m - k$ points. Thus $\exp(-\bar{x}) < \bar{x}^{x_m} \exp(-\bar{x}) / x_m!$. But then $x_m! < \bar{x}^{x_m}$. By the lower bound in Stirling's formula, we have $x_m < e \cdot \bar{x}$ when $x_m > 0$. Note that if $x_m = 0$ then MLE equals ML$q$E since all data points equal zero. Thus ML$q$E is bounded by $e \cdot \bar{x}$. As a result, $\hat{{P}}_{ij} \le e \cdot \hat{{P}}_{ij}^{(1)}$ and Condition~3 is satisfied. Finally, Condition~4 follows directly from the theory of minimum contrast estimators.
 
 In summary, all theorems in Section~\ref{sec:robust_LLG_theoretical_result} hold for the Poisson distribution together with the ML$q$E. The four conditions presented in this section provide a general framework for extending the theory to more general models and robust estimators.
 
@@ -462,11 +466,11 @@ In summary, all theorems in Section~\ref{sec:robust_LLG_theoretical_result} hold
 \section{Simulations}
 \label{sec:robust_LLG_simulation}
 
-In this section, we first illustrate the theoretical comparison among the four estimators discussed in Section~\ref{sec:robust_LLG_theoretical_result} via various Monte Carlo simulation experiments in an idealized setting.
+% In this section, we first illustrate the theoretical comparison among the four estimators discussed in Section~\ref{sec:robust_LLG_theoretical_result} via various Monte Carlo simulation experiments in an idealized setting.
 
 \subsection{Simulation Setting}
 \label{sec:sim_setting}
-Here we consider a 2-block WSBM with respect to the exponential distributions parameterized by
+Here we consider a 2-block WSBM with respect to the exponential distribution parameterized by
 \begin{equation*}
 B = \begin{bmatrix}
 4 & 2 \\
@@ -497,25 +501,26 @@ As suggested in \citep{tang2016law}, in this work we combine both ideas by first
 
 \subsection{Simulation Results}
 
-In order to see how the performance of the four estimators vary with respect to contamination, we first run 1000 Monte Carlo replicates based on the contaminated WSBM specified in Section~\ref{sec:sim_setting} with a fixed number of vertices $n = 100$ and a fixed number of graphs $m = 20$ while varying the contamination probability $\epsilon$ from $0$ to $0.4$.
-Given each sample, four estimators can be calculated following Algorithm~\ref{algo:robust_LLG_basic} and Algorithm~\ref{algo:robust_LLG_basic_q}. Since we are not focusing on how to select the parameter $q$ in the ML$q$E estimator, we use a fixed $q = 0.9$ throughout this paper. Then the MSE of each estimator can be estimated since the probability matrix $P$ is known in this simulation.
+To see how the performance of the four estimators vary with respect to contamination, we first run 1000 Monte Carlo replicates based on the contaminated WSBM specified in Section~\ref{sec:sim_setting} with a fixed number of vertices $n = 100$ and a fixed number of graphs $m = 20$ while varying the contamination probability $\epsilon$ from $0$ to $0.4$.
+Given each sample, four estimators can be computed following Algorithm~\ref{algo:robust_LLG_basic} and Algorithm~\ref{algo:robust_LLG_basic_q}. Since we are not focusing on how to select the parameter $q$ in the ML$q$E estimator, we shall use a fixed $q = 0.9$ unless specified otherwise. The MSE of each estimator can be estimated since the probability matrix $P$ is known in this simulation.
 
 The results are presented in Figure~\ref{fig:eps}. Different curves represent the simulated MSE associated with the four different estimators.
-Firstly, we see MLE $\hat{P}^{(1)}$ is the best estimator when there is little or no contamination (i.e.\ $\epsilon$ is small or $\epsilon = 0$); however this estimator degrades dramatically as the contamination probability increases. On the other hand, the ML$q$E $\hat{P}^{(q)}$ is slightly less efficient than the MLE $\hat{P}^{(1)}$ when the contamination probability is small, but is much more robust under a large contamination probability compared to the MLE.
-Next, we see that even with a relatively small number of vertices $n = 100$, the ASE procedure which takes advantage of the low-rank structure already helps improve the performance of $\hat{P}^{(1)}$ and lets $\widetilde{P}^{(1)}$ win the bias-variance tradeoff. Since the ML$q$E $\hat{P}^{(q)}$ approximately preserves the low-rank structure of the original graph, the ASE procedure also helps and makes $\widetilde{P}^{(q)}$ a better estimate. Although both $\widetilde{P}^{(q)}$ and $\widetilde{P}^{(1)}$ take advantage of the low-rank structure and have reduced variances, $\widetilde{P}^{(q)}$ constructed based on ML$q$E inherits the robustness from ML$q$E, so when the contamination probability is large enough, $\widetilde{P}^{(q)}$ outperforms $\widetilde{P}^{(1)}$ and degrades more slowly.
+Firstly, we see that MLE $\hat{{P}}^{(1)}$ is a better estimator compared to ML$q$E $\hat{{P}}^{(q)}$ when there is little or no contamination (i.e.\ $\epsilon \le 0.01$ in the figure); however this estimator degrades dramatically as the contamination probability increases.
+On the other hand, the ML$q$E $\hat{{P}}^{(q)}$ is slightly less efficient than the MLE $\hat{{P}}^{(1)}$ when the contamination probability is small, but is much more robust under a large contamination probability compared to the MLE.
+Secondly, we see that even with a relatively small number of vertices $n = 100$, the ASE procedure which takes advantage of the low-rank structure already helps improve the performance of $\hat{{P}}^{(1)}$ and lets $\widetilde{{P}}^{(1)}$ win the bias-variance tradeoff. Since the ML$q$E $\hat{{P}}^{(q)}$ approximately preserves the low-rank structure of the original graph, the ASE procedure also helps and makes $\widetilde{{P}}^{(q)}$ a better estimate. Although both $\widetilde{{P}}^{(q)}$ and $\widetilde{{P}}^{(1)}$ take advantage of the low-rank structure and have reduced variances, $\widetilde{{P}}^{(q)}$ constructed based on ML$q$E inherits the robustness from ML$q$E, so when the contamination probability is large enough, $\widetilde{{P}}^{(q)}$ outperforms $\widetilde{{P}}^{(1)}$ and degrades more slowly.
 
-\begin{figure}[!htb]
+\begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./Figures/sim_eps.pdf}
-\caption{Mean squared error in average by varying contamination ratio $\epsilon$ with fixed $n = 100$ and $m = 20$ based on 1000 Monte Carlo replicates, using $q=0.9$ when applying ML$q$E.
+\caption[MSE for different contamination ratio $\epsilon$]{Mean squared error in average by varying contamination ratio $\epsilon$ with fixed $n = 100$ and $m = 20$ based on 1000 Monte Carlo replicates, using $q=0.9$ when applying ML$q$E.
 Different curves represent the simulated MSE associated with four different estimators.
-1. MLE $\hat{P}^{(1)}$ vs ML$q$E $\hat{P}^{(q)}$:
+1. MLE $\hat{P}^{(1)}$ vs. ML$q$E $\hat{P}^{(q)}$ (Relationship (a) in Figure~\ref{fig:summary}):
 MLE outperforms by a small amount when there is no contamination (i.e.\ $\epsilon = 0$), but it degrades dramatically when contamination probability increases;
-2. MLE $\hat{P}^{(1)}$ vs ASE $\circ$ MLE $\widetilde{P}^{(1)}$: 
+2. MLE $\hat{P}^{(1)}$ vs. ASE $\circ$ MLE $\widetilde{P}^{(1)}$ (Relationship (b) in Figure~\ref{fig:summary}):
 ASE procedure takes the low rank structure into account and $\widetilde{P}^{(1)}$ wins the bias-variance tradeoff;
-3. ML$q$E $\hat{P}^{(q)}$ vs ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$: 
+3. ML$q$E $\hat{P}^{(q)}$ vs. ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$ (Relationship (c) in Figure~\ref{fig:summary}):
 ML$q$E approximately preserves the low rank structure of the original graph, so ASE procedure still helps and $\widetilde{P}^{(q)}$ wins the bias-variance tradeoff;
-4. ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$ vs ASE $\circ$ MLE $\widetilde{P}^{(1)}$: 
+4. ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$ vs. ASE $\circ$ MLE $\widetilde{P}^{(1)}$ (Relationship (d) in Figure~\ref{fig:summary}):
 When contamination probability is large enough, $\widetilde{P}^{(q)}$ based on ML$q$E is better, since it inherits the robustness from ML$q$E.}
 \label{fig:eps}
 \end{figure}
@@ -525,38 +530,45 @@ Figure~\ref{fig:q} shows additional simulation results by varying the parameter 
 From the figure, we can see that the ASE procedure takes advantage of the graph structure and improves the performance of the corresponding estimators for a wide range of $q$. Moreover, for a wide range of $q$, the ML$q$E wins the bias-variance tradeoff and exhibits the robustness property compared to the MLE. And as $q$ goes to 1, ML$q$E goes to the MLE as expected.
 
 
-\begin{figure}[!htb]
+\begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./Figures/sim_q.pdf}
-\caption{Mean squared error in average by varying the parameter $q$ in ML$q$E with fixed $n = 100$, $m = 20$ and $\epsilon = 0.1$ based on 1000 Monte Carlo replicates. Different curves represent the simulated MSE associated with the four different estimators.
-1. ASE procedure takes advantage of the graph structure and improves the performance of the corresponding estimators independent of the selection of $q$;
-2. Within a proper range of $q$, ML$q$E wins the bias-variance tradeoff and exibits robustness compared to the MLE. Also as $q$ goes to 1, ML$q$E goes to the MLE as expected.}
+\caption[MSE for different parameter $q$]{Mean squared error in average by varying the parameter $q$ in ML$q$E with fixed $n = 100$, $m = 20$ and $\epsilon = 0.1$ based on 1000 Monte Carlo replicates. Different curves represent the simulated MSE associated with the four different estimators.
+1. MLE $\hat{{P}}^{(1)}$ vs. ML$q$E $\hat{{P}}^{(q)}$ (Relationship (a) in Figure~\ref{fig:summary}):
+Within an appropriate range of $q$, $\hat{{P}}^{(q)}$ wins the bias-variance tradeoff and exhibits robustness compared to $\hat{{P}}^{(1)}$. Also as $q$ goes to 1, $\hat{{P}}^{(q)}$ goes to $\hat{{P}}^{(1)}$ as expected;
+2. MLE $\hat{{P}}^{(1)}$ vs. ASE $\circ$ MLE $\widetilde{{P}}^{(1)}$ (Relationship (b) in Figure~\ref{fig:summary}):
+Both estimators are not affected by different choices of $q$. $\widetilde{{P}}^{(1)}$ outperforms $\hat{{P}}^{(1)}$ as shown in Figure~\ref{fig:eps};
+3. ML$q$E $\hat{{P}}^{(q)}$ vs. ASE $\circ$ ML$q$E $\widetilde{{P}}^{(q)}$ (Relationship (c) in Figure~\ref{fig:summary}):
+ASE procedure takes advantage of the graph structure and $\widetilde{{P}}^{(q)}$ improves the performance of $\hat{{P}}^{(q)}$ independent of the selection of $q$;
+4. ASE $\circ$ ML$q$E $\widetilde{{P}}^{(q)}$ vs. ASE $\circ$ MLE $\widetilde{{P}}^{(1)}$ (Relationship (d) in Figure~\ref{fig:summary}):
+Within an appropriate range of $q$, $\widetilde{{P}}^{(q)}$ inherits robustness from $\hat{{P}}^{(q)}$ and outperforms $\widetilde{{P}}^{(1)}$.}
 \label{fig:q}
 \end{figure}
 
 
-Figures \ref{fig:eps} and Figure~\ref{fig:q} provide a tangible demonstration of the theoretical results presented in Section~\ref{sec:robust_LLG_theoretical_result}.
+% Figures \ref{fig:eps} and Figure~\ref{fig:q} provide a tangible demonstration of the theoretical results presented in Section~\ref{sec:robust_LLG_theoretical_result}.
 
 
 
 
 
 
-\section{CoRR Brain Graphs Experiment}
+\section{Brain Graphs Experiment}
 \label{sec:robust_LLG_corr_data}
 
-We now compare the four estimators on a structural connectomic dataset. The graphs in this dataset are based on diffusion tensor MR images. There are 114 different brain scans, each of which was processed to yield an undirected, weighted graph with no self-loops, using the m2g pipeline described in \citep{kiar2016ndmg}. The vertices of the graphs represent different regions in the brain defined according to an atlas. We used the Desikan atlas with 70 vertices in this experiment. The weight of an edge between two vertices represents the number of white-matter tracts connecting the corresponding two regions of the brain.
+We now compare the four estimators on a structural connectomic dataset. The graphs in this dataset are based on diffusion tensor MR images. There are 114 different brain scans, each of which was processed to yield an undirected, weighted graph with no self-loops, using the ndmg pipeline \citep{kiar2017science, kiar2016ndmg}. There are different versions of this pipeline. In particular, the estimators are calculated based on graphs generated through version ``ndmg-v0.0.1'' (ndmg1). Note that we will consider another version ``ndmg-v0.0.33'' (ndmg2) to assess the performance of our estimators later in this section.
+The vertices of the graphs represent different regions in the brain defined according to an atlas. We used the Desikan atlas with 70 vertices in this experiment. The weight of an edge between two vertices represents the number of white-matter tracts connecting the corresponding two regions of the brain.
 
-Generally, we do not expect the graphs to perfectly follow an RDPG, or even IEM. Before we perform our estimation, we will perform some exploratory analysis to check whether the data can reasonably be assumed to have approximate low-rank structure. Indeed, without at least approximately low-rank structure, we will not expect the ASE procedure to improve the bias-variance tradeoff because of a potential high bias. In the left panel of Figure~\ref{fig:screehist}, we plot the eigenvalues of the mean graph of all 114 graphs (with diagonal augmentation) in decreasing algebraic order for the Desikan atlases based on the m2g pipeline. The eigenvalues first decrease dramatically and then stay around 0 for a large range of dimensions. In addition, we also plot the histogram in the right panel of Figure~\ref{fig:screehist}. From the figure, we see that many eigenvalues are concentrated around zero. 
+Generally, we do not expect the graphs to perfectly follow an RDPG model, or even an IEM. Before proceeding with our analysis, we will perform some exploratory data analysis to check whether the data can reasonably be assumed to have approximate low-rank structure. Indeed, without at least some approximately low-rank structure, we will not expect the ASE procedure to improve the bias-variance tradeoff because of a potential high bias. In the left panel of Figure~\ref{fig:screehist}, we plot the eigenvalues of the mean graph of all 114 graphs (with diagonal augmentation) in decreasing algebraic order for the Desikan atlases based on the ndmg1 pipeline. The eigenvalues first decrease dramatically and then stay around 0 for a large range of dimensions. In addition, we also plot the histogram in the right panel of Figure~\ref{fig:screehist}. From the figure, we see that many eigenvalues are concentrated around zero. 
 %In addition, we calculate the effective rank of $P$ to be 35 according to \citep{roy2007effective}. 
 This exploration suggests that the information is mostly contained in the first few dimensions. Such approximate low-rank property provides an opportunity to win the bias-variance tradeoff by applying the ASE procedure.
 
-\begin{figure}[!htbp]
+\begin{figure}
 \centering
-\includegraphics[height=.22\textheight]{./Figures/screeplot_m2g.pdf}
-\includegraphics[height=.22\textheight]{./Figures/hist_m2g.pdf}
-\caption{Screeplot and the histogram of the eigenvalues of the  mean of 114 graphs based on m2g pipeline.
-The screeplot in the left panel shows the eigenvalues of the mean graph of all 114 graphs with diagonal augmentation in decreasing algebraic order for the Desikan atlas. The right panel shows the histogram of the eigenvalues of the mean graph of all 114 graphs with diagonal augmentation. Many eigenvalues are around zero, which lead to an approximate low-rank structure. 
+\includegraphics[width=.48\textwidth]{./Figures/screeplot_m2g.pdf}
+\includegraphics[width=.48\textwidth]{./Figures/hist_m2g.pdf}
+\caption[Screeplot and histogram of the normalized eigenvalues of the mean of 114 graphs based on ndmg1 pipeline]{Screeplot and the histogram of the normalized eigenvalues (divided by the largest eigenvalue $230267.8$) of the  mean of 114 graphs based on ndmg1 pipeline.
+The screeplot in the left panel shows the eigenvalues of the mean graph of all 114 graphs with diagonal augmentation in decreasing algebraic order for the Desikan atlas. The right panel shows the histogram of the normalized eigenvalues (divided by the largest eigenvalue $230267.8$) of the mean graph of all 114 graphs with diagonal augmentation. Many eigenvalues are around zero, which lead to an approximate low-rank structure. 
 %In addition, we calculate the effective rank of $P$ to be 35, which also suggests that the rank is relatively low.
 }
 \label{fig:screehist}
@@ -564,36 +576,38 @@ The screeplot in the left panel shows the eigenvalues of the mean graph of all 1
 
 We now discuss an important issue with respect to this current dataset. To compare the four estimators, we need a notion of the MSE, which requires the true parameter matrix $P$. However, unlike simulation experiment in Section~\ref{sec:sim_setting}, $P$ is definitely not available in practice since the 114 graphs themselves are also a sample from the population. We address this issue by finding a surrogate estimate for $P$ and using it to calculate the MSE.
 %is a feasible way in this experiment. 
-Recently, \citet{kiar2016ndmg} proposed a better pipeline ndmg2 compared to m2g. So the MLE derived from the 114 graphs in ndmg2 should be a relatively more accurate estimate of the actual probability matrix $P$ for the population. We use this as our surrogate for $P$ when calculating the MSE. However, such a $P$ generally has full rank, which breaks the low-rank assumptions. So this setting makes it hard for $\widetilde{P}^{(1)}$ and $\widetilde{P}^{(q)}$ to improve and is favorable to $\hat{P}^{(1)}$ and $\hat{P}^{(q)}$. Thus any improvement is conservative. Moreover, it is still possible that the 114 graphs from ndmg2 contain outliers. Thus by using the MLE of the ndmg2 data as $P$, the performance of ML$q$E-related estimators $\hat{P}^{(q)}$ and $\widetilde{P}^{(q)}$ are underestimated.
+Recently, \citet{kiar2016ndmg, kiar2017science} updated the ndmg pipeline to a new version ``ndmg-v0.0.33'' (ndmg2), which generates graphs of better quality compared to the previous version ``ndmg-v0.0.1'' (ndmg1). So the MLE derived from the 114 graphs in ndmg2 should be a relatively more accurate estimate of the actual probability matrix $P$ for the population. We use this as our surrogate for $P$ when calculating the MSE. However, such a $P$ generally has full rank, which breaks the low-rank assumptions. So this setting makes it hard for $\widetilde{P}^{(1)}$ and $\widetilde{P}^{(q)}$ to improve and is favorable to $\hat{P}^{(1)}$ and $\hat{P}^{(q)}$. Thus any improvement is conservative. Moreover, it is still possible that the 114 graphs from ndmg2 contain outliers. Thus by using the MLE of the ndmg2 data as $P$, the performance of ML$q$E-related estimators $\hat{P}^{(q)}$ and $\widetilde{P}^{(q)}$ are underestimated.
 In summary, our approach to constructing a workable surrogate for $P$ relies on the availability of a better pipeline ndmg2, but is biased against both ASE-based and ML$q$E-based estimators; still, as we will see,  ASE $\circ$ ML$q$E is our winner.
 
-In this experiment, we build the four estimates based on the sample of size $m$ from the m2g dataset, while using the MLE of all 114 graphs from the ndmg2 dataset as the surrogate probability matrix $P$. Note that diagonal augmentation procedure introduced in Section~\ref{sec:diag_aug} is also applied here to compensate for the unnecessary bias.
-We run 100 simulations on this dataset for different sample sizes $m = 2, 5, 10$. Specifically, in each Monte Carlo replicate, we sample $m$ graphs out of the 114 from the m2g dataset and compute the four estimates based on the $m$ sampled graphs. Once again for simplicity, we set $q$ to be 0.9 without further exploration. However, the results are consistent for many choices of $q$. We then compare these estimates to the MLE of all 114 graphs in the ndmg2 dataset.
+In this experiment, we build the four estimates based on the sample of size $m$ from the ndmg1 pipeline, while using the MLE of all 114 graphs from the ndmg2 dataset as the surrogate probability matrix $P$. Note that diagonal augmentation procedure introduced in Section~\ref{sec:diag_aug} is also applied here to compensate for the bias introduced by the zero diagonals of the adjacency matrices.
+We run 100 simulations on this dataset for different sample sizes $m = 2, 5, 10$. Specifically, in each Monte Carlo replicate, we sample $m$ graphs out of the 114 from the ndmg1 pipeline and compute the four estimates based on the $m$ sampled graphs. Once again for simplicity, we set $q$ to be 0.9 without further exploration. However, the results are qualitatively similar for many choices of $q$. We then compare these estimates to the MLE of all 114 graphs in the ndmg2 dataset.
 For the two low-rank estimators $\widetilde{P}^{(1)}$ and $\widetilde{P}^{(q)}$, we apply ASE into all possible dimensions, i.e.\ $d$ ranges from 1 to $n$. The MSE results are shown in Figure~\ref{fig:CCI}.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{./Figures/CCI.pdf}
-\caption{Comparison of MSE of the four estimators for the Desikan atlases at three sample sizes.
-The x-axis represents the dimensions to embed while y-axis is the MSE of each estimator.
-1. MLE $\hat{P}^{(1)}$ (horizontal solid line) vs MLqE $\hat{P}^{(q)}$ (horizontal dotted line):
-ML$q$E outperforms MLE since in practice observations are always contaminated and robust estimators are preferred;
-2. MLE $\hat{P}^{(1)}$ (horizontal solid line) vs ASE $\circ$ MLE $\widetilde{P}^{(1)}$ (dashed line):
-$\widetilde{P}^{(1)}$ wins the bias-variance tradeoff when being embedded into a proper dimension; 
-3. MLqE $\hat{P}^{(q)}$ (horizontal dotted line) vs ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$ (dashed dotted line):
-$\widetilde{P}^{(q)}$ wins the bias-variance tradeoff when being embedded into an appropriate dimension; 
-4.  ASE $\circ$ ML$q$E $\widetilde{P}^{(q)}$ (dashed dotted line) vs ASE $\circ$ MLE $\widetilde{P}^{(1)}$ (dashed line):
-$\widetilde{P}^{(q)}$ is better, since it inherits the robustness from ML$q$E. The squares and circles represent the dimensions selected by the Zhu and Ghodsi method, which we see are reasonable choices. And more importantly, a wide range of dimensions lead to an improvement.
+\caption[Comparison of MSE of the four estimators for the Desikan atlases at three sample sizes]{Comparison of MSE of the four estimators using the Desikan atlas ndmg graphs at three sample sizes.
+Three panels represent different sample sizes $m = 2, 5, 10$. The more samples we have, the better each estimator performs.
+The horizontal-axis represents the number of embedded dimensions  while the vertical-axis characterizes the MSE of each estimator. And four estimators perform similarly according to different dimensions under different sample size $m$.
+1. MLE $\hat{{P}}^{(1)}$ vs. MLqE $\hat{{P}}^{(q)}$:
+$\hat{{P}}^{(q)}$ outperforms $\hat{{P}}^{(1)}$ since in practice observations are always contaminated and robust estimators are preferred;
+2. MLE $\hat{{P}}^{(1)}$ vs. ASE $\circ$ MLE $\widetilde{{P}}^{(1)}$:
+$\widetilde{{P}}^{(1)}$ wins the bias-variance tradeoff when being embedded into a proper dimension;
+3. MLqE $\hat{{P}}^{(q)}$ vs. ASE $\circ$ ML$q$E $\widetilde{{P}}^{(q)}$:
+$\widetilde{{P}}^{(q)}$ wins the bias-variance tradeoff when being embedded into a proper dimension;
+4. ASE $\circ$ ML$q$E $\widetilde{{P}}^{(q)}$ vs. ASE $\circ$ MLE $\widetilde{{P}}^{(1)}$:
+$\widetilde{{P}}^{(q)}$ is better, since it inherits the robustness from $\hat{{P}}^{(q)}$. The squares and circles represent the dimensions selected by the Zhu and Ghodsi method, which we see are reasonable choices. And more importantly, a wide range of dimensions lead to an improvement.
 }
 \label{fig:CCI}
 \end{figure}
 
 
-When $d$ is small, the ASE procedures underestimate the dimension and fail to capture important information, which leads to poor performance. In this work, we use Zhu and Ghodsi's method discussed in Section~\ref{sec:dim_select} to select the dimension $d$. We denote the selected dimensions by square and circle in the figure. We can see the algorithm performs adequately for selecting a dimension in which to embed. More importantly, there is a wide range of dimensions which lead to a better performance when applying ASE. Although the $P$ we are estimating is actually a high-rank matrix, ASE procedures still win the bias-variance tradeoff and improve performance even in this unfavorable setting.
+When $d$ is small, the ASE procedures underestimate the dimension and fail to capture important information, which leads to poor performance. In this work, we use Zhu and Ghodsi's method discussed in Section~\ref{sec:dim_select} to select the dimension $d$. We denote the ZG dimension of $\hat{P}^{(1)}$ by square and denote the ZG dimensions of $\hat{P}^{(q)}$ by circle in the figure. We can see the algorithm performs adequately for selecting a dimension in which to embed. More importantly, a wide range of dimension choices lead to fairly good and comparable results. Thus any dimension selection method can generally be applied directly without excessive tuning of parameters, thereby making our low-ranked estimators useful in practice. Although the $P$ we are estimating is actually a high-rank matrix, ASE procedures still win the bias-variance tradeoff and improve performance even in this unfavorable setting.
 
-Also, the robust estimator $\hat{P}^{(q)}$ performs relatively better than $\hat{P}^{(1)}$ in this experiment, even though $P$ still (presumably) contains outliers. This strongly indicates that there are many outliers in the original graphs from the m2g pipeline, and $\widetilde{P}^{(q)}$ successfully inherits the robustness from ML$q$E and outperforms $\widetilde{P}^{(1)}$.
+Also, the robust estimator $\hat{P}^{(q)}$ performs relatively better than $\hat{P}^{(1)}$ in this experiment, even though $P$ still (presumably) contains outliers. This strongly indicates that there are many outliers in the original graphs from the ndmg1 pipeline, and $\widetilde{P}^{(q)}$ successfully inherits the robustness from ML$q$E and outperforms $\widetilde{P}^{(1)}$.
 
-For all three sample sizes ($m = 2, 5, 10$), $\widetilde{P}^{(q)}$ estimates $P$ most accurately while the target -- the surrogate $P$ -- is biased in favor of the other three estimators. As such, we expect $\widetilde{P}^{(q)}$ to provide an even better estimate for the true but unknown $P$.
+For all three sample sizes ($m = 2, 5, 10$), $\widetilde{{P}}^{(q)}$ estimates ${P}$ most accurately while the target -- the surrogate ${P}$ which is itself an edge-wise MLE -- is biased in favor of the other three estimators due to its high rank and non-robustness.
+As such, we expect $\widetilde{{P}}^{(q)}$ to provide an even better estimate for the true but unknown ${P}$.
 
 
 
@@ -607,7 +621,7 @@ For all three sample sizes ($m = 2, 5, 10$), $\widetilde{P}^{(q)}$ estimates $P$
 
 \subsection{Outline of the Proofs}
 
-Firstly, in Section~\ref{section:pf_MLqEvsMLE}, we prove in Lemma~\ref{lemma:ELqlEMLEproof} that when the contamination is large enough, the robust estimator $\hat{P}^{(q)}$ has smaller asymptotic bias compared to $\hat{P}^{(1)}$. By the results of minimum contrast estimator, we also show in Lemma~\ref{lemma:VarLqlVarMLEproof} that both estimators have variances going to zero as the number of graphs $m$ goes to infinity.
+First, in Section~\ref{section:pf_MLqEvsMLE}, we prove in Lemma~\ref{lemma:ELqlEMLEproof} that when the contamination is large enough, the robust estimator $\hat{P}^{(q)}$ has smaller asymptotic bias compared to $\hat{P}^{(1)}$. By the results of minimum contrast estimator, we also show in Lemma~\ref{lemma:VarLqlVarMLEproof} that both estimators have variances going to zero as the number of graphs $m$ goes to infinity.
 
 In Section~\ref{section:pf_MLEvsMLEASE1}, we analyze the properties of the ASE procedure. We first prove Theorem~\ref{thm:P1Diff}, which provides an upper bound for the spectral norm of the difference between the estimator $\hat{P}^{(1)}$ and its expectation $H_{ij}^{(1)} = E[\hat{P}_{ij}^{(1)}]$. Lemma~\ref{lemma:AlmostOrthogonalL1} shows that $U^{\top} \hat{U}$ can be approximated by an orthogonal matrix $W^{*} = W_1 W_2^{\top}$, where $U$ and $\hat{U}$ are the eigenspaces with respect to the largest $d$ eigenvalues of $H_{ij}^{(1)}$ and $\hat{P}^{(1)}$ respectively. More conveniently, Lemma~\ref{lemma:exchangeL1} indicates that we can change the order of $W^*$ in the matrix multiplications accordingly without affecting the result much. With these tool results, in Lemma~\ref{lemma:XhatDiffXWexpressionL1} we give an upper bound of $\|\hat{Z} - Z W\|_F$, which controls the error of the $\hat{Z}$ for estimating the true latent positions $Z$ up to orthogonal transformation.
 % Briefly, in order to prove Lemma~\ref{lemma:XhatDiffXWexpressionL1}, we first write $\hat{Z} - U S^{1/2} W^*$ as the sum $(\hat{P} - H) U W^* \hat{S}^{-1/2} - U U^{\top}(\hat{P} - H)U W^*\hat{S}^{-1/2} + (I - U U^{\top})(\hat{P} - H) Q_3 \hat{S}^{-1/2} + Q_1 \hat{S}^{1/2} + U Q_2$, and bound each term accordingly based on Lemma~\ref{lemma:AlmostOrthogonalL1} and Lemma~\ref{lemma:exchangeL1}. Then by the Bernstein inequality, in Theorem~\ref{thm:XhatDiffXWL1} we give the bound of the ($2 \to \infty$)-norm of the $\hat{Z} - Z W$, i.e. $\max_i \| \hat{Z}_i - W Z_i \|_2$.
@@ -629,18 +643,18 @@ We say a bound holds with high probability, if there exits a constant $n_0(c)$ s
 
 \begin{lemma}
 \label{lemma:LqlMLE}
-Let $X_1, \cdots, X_m \stackrel{iid}{\sim} \mathrm{Exp}(P)$ with $m \ge 2$ and $E[X_1] = P$. Then with probability $1$,
+Let $X_1, \cdots, X_m \stackrel{iid}{\sim} \mathrm{Exp}(p)$ with $m \ge 2$ and $E[X_1] = p$. Then with probability $1$,
 %Given any observation $x = (x_1, \cdots, x_m)$ of $X_1, X_2, \dots, X_m$ such that $x_{(1)} > 0$ and not all $x_i$'s are the same, then no matter how the data is sampled, we have
 \begin{itemize}
 \item There exists at least one solution to the ML$q$ equation;
 \item All the solutions to the ML$q$ equation are less than the MLE.
 \end{itemize}
-Thus the ML$q$E $\hat{P}^{(q)}$, the root closest to the MLE, is well defined.
+Thus the ML$q$E $\hat{p}^{(q)}$, the root closest to the MLE, is well defined.
 \end{lemma}
 \begin{proof}
 Let $x_1, \cdots, x_m$ be the observed values of $X_1, X_2, \dots, X_m$. Then with probability $1$, the $x_i$ are unique and $x_{(1)} = \min_{i} x_i > 0$. The MLE is
 \[
-	\hat{P}^{(1)}(x) = \bar{x}.
+	\hat{p}^{(1)}(x) = \bar{x}.
 \]
 
 Let $g(\theta, x) = \sum_{i=1}^m e^{-\frac{(1-q)x_i}{\theta}}(x_i - \theta)$. Then the ML$q$ equation is $g(\theta, x) = 0$. Now let $l$ be the smallest index such that $x_{(1)} \le \cdots \le x_{(l)} \le \bar{x} \le x_{(l+1)} \le \cdots$. Define $s_i = \bar{x} - x_{(i)}$ for $1 \le i \le l$, and $t_{i} = x_{(l+i)} - \bar{x}$ for $1 \le i \le m - l$. Note that $\sum_{i=1}^l s_i = \sum_{i=1}^{m-l} t_i$. Then for any $\theta \ge \bar{x}$, we have
@@ -662,70 +676,74 @@ g(\theta, x) & = \sum_{i=1}^m e^{-\frac{(1-q)x_{(i)}}{\theta}}(x_{(i)} - \theta)
 \end{align*}
 and equality holds if and only if all $x_i$'s are the same, which occurs with probability $0$. Thus with probablity $1$, $g(\theta, x) < 0$ for all $\theta \ge \bar{x}$.
 
-Denote any solution to the ML$q$E equation as $\hat{P}^{(q)}(x)$; we then have that
+Denote any solution to the ML$q$E equation as $\hat{p}^{(q)}(x)$; we then have that
 \begin{itemize}
-\item $g(\hat{P}^{(q)}(x), x) = 0$;
+\item $g(\hat{p}^{(q)}(x), x) = 0$;
 \item $\lim_{\theta \rightarrow 0^+}g(\theta, x) = 0$;
 \item $g(\theta, x) > 0$ when $\theta < x_{(1)}$;
 \end{itemize}
 
-Thus there exists at least one solution to the ML$q$E equation. And since all solutions to the ML$q$E equation are in the interval $(x_{(1)},\bar{x})$, we have t$\hat{P}^{(q)}(x) \leq \hat{P}^{(1)}(x)$.
+Thus there exists at least one solution to the ML$q$E equation. And since all solutions to the ML$q$E equation are in the interval $(x_{(1)},\bar{x})$, we have $\hat{p}^{(q)}(x_1, \dots, x_m) \leq \hat{p}^{(1)}(x_1, \dots, x_m)$. 
 \end{proof}
 
 \begin{lemma}
 \label{lemma:PopulationLqExist}
-Consider an exponential distribution model while the data is actually sampled from the contaminated model $X, X_1, \cdots, X_m \stackrel{iid}{\sim} (1-\epsilon) \mathrm{Exp}(P) + \epsilon \mathrm{Exp}(C)$. Denote such contaminated distribution as $F$.
-Then there exists exactly one real solution $\theta(F)$ of the population version of ML$q$ equation,
-i.e.\ $E_F[e^{-\frac{(1-q)X}{\theta(F)}}(X - \theta(F))] = 0$. Moreover, $\theta(F) < E_F[\bar{X}] = (1-\epsilon) P + \epsilon C$.
+Recall that the ML$q$E equation under the exponential distribution based on $m$ data points $x_1, \dots, x_m$ is $\sum_{i=1}^m e^{-\frac{(1-q)x_i}{\theta}}(x_i - \theta) = 0$. And the MLE equation under the exponential distribution based on the same data is $\sum_{i=1}^m (x_i - \theta) = 0$.
+Let $m$ data points sample from the contamination model $X, X_1, \cdots, X_m \stackrel{iid}{\sim} (1-\epsilon) \mathrm{Exp}(p) + \epsilon \mathrm{Exp}(c)$.
+Consider an exponential distribution model while the data is actually sampled from the contaminated model $X, X_1, \cdots, X_m \stackrel{iid}{\sim} (1-\epsilon) \mathrm{Exp}(p) + \epsilon \mathrm{Exp}(c)$. Denote such contaminated distribution as $F$.
+Then there exists exactly one real solution $\theta(F)$ of the population version of ML$q$E equation under the exponential distribution,
+i.e.\ $E_F[e^{-\frac{(1-q)X}{\theta(F)}}(X - \theta(F))] = 0$.
+Moreover, the ML$q$E solution is less than the MLE where the MLE equation is also defined under the exponential distribution, i.e.\
+$\theta(F) < E_F[\bar{X}] = (1-\epsilon) p + \epsilon c$.
 \end{lemma}
 \begin{proof}
-For the MLE, i.e.\ $\bar{X}$, we have $E[\bar{X}] = (1-\epsilon) P + \epsilon C$.
+For the MLE, i.e.\ $\bar{X}$, we have $E[\bar{X}] = (1-\epsilon) p + \epsilon c$.
 According to Equation (3.2) in \citep{ferrari2010maximum}, $\theta(F)$ satisfies
 \[
-\frac{\epsilon C}{(C(1-q) + \theta)^2} - \frac{\epsilon}{C(1-q) + \theta}
-+\frac{(1-\epsilon) P}{(P(1-q) + \theta)^2} - \frac{(1-\epsilon)}{P(1-q) + \theta}
+\frac{\epsilon c}{(c(1-q) + \theta)^2} - \frac{\epsilon}{c(1-q) + \theta}
++\frac{(1-\epsilon) p}{(p(1-q) + \theta)^2} - \frac{(1-\epsilon)}{p(1-q) + \theta}
 = 0,
 \]
 i.e.\
 \[
-\frac{\epsilon (\theta - Cq)}{(C(1-q) + \theta)^2} =
-\frac{(1-\epsilon) (P q - \theta)}{(P(1-q) + \theta)^2}.
+\frac{\epsilon (\theta - c q)}{(c(1-q) + \theta)^2} =
+\frac{(1-\epsilon) (p q - \theta)}{(p(1-q) + \theta)^2}.
 \]
-Define $h(\theta) = (C(1-q) + \theta)^2 (1-\epsilon) (P q - \theta) - (P(1-q) + \theta)^2 \epsilon (\theta - Cq)$.
-Then $\lim_{\theta \to \infty}h(\theta) = -\infty$, $h(0) > 0$, and $h(Cq) < 0$.
+Define $h(\theta) = (c(1-q) + \theta)^2 (1-\epsilon) (p q - \theta) - (p(1-q) + \theta)^2 \epsilon (\theta - c q)$.
+Then $\lim_{\theta \to \infty}h(\theta) = -\infty$, $h(0) > 0$, and $h(c q) < 0$.
 Consider $q$ as the variable and solve the equation $h(E[\bar{X}]) = 0$, we have three roots and one of them is $q = 1$ obviously.
 The other two roots are
 \[
-\frac{(P + C)\left( (P-C)^2 \epsilon(1-\epsilon) + 2PC \right)}{2PC(P \epsilon + C(1-\epsilon))}
-\pm \sqrt{\frac{\epsilon(1-\epsilon)(C-P)^2\left(\epsilon(1-\epsilon)(C-P)^4 - 4P^2C^2\right)}{4 P^2 C^2 (P\epsilon + C(1-\epsilon))^2}}.
+\frac{(p + c)\left( (p - c)^2 \epsilon(1-\epsilon) + 2 p c \right)}{2pc(p \epsilon + c(1-\epsilon))}
+\pm \sqrt{\frac{\epsilon(1-\epsilon)(c-p)^2\left(\epsilon(1-\epsilon)(c-p)^4 - 4p^2c^2\right)}{4 p^2 c^2 (p\epsilon + c(1-\epsilon))^2}}.
 \]
 To prove the roots are greater or equal to 1, we need to show
 \[
-\frac{(P + C)\left( (P-C)^2 \epsilon(1-\epsilon) + 2PC \right)}{2PC(P \epsilon + C(1-\epsilon))}
-- \sqrt{\frac{\epsilon(1-\epsilon)(C-P)^2\left(\epsilon(1-\epsilon)(C-P)^4 - 4P^2C^2\right)}{4 P^2 C^2 (P\epsilon + C(1-\epsilon))^2}} > 1.
+\frac{(p + c)\left( (p-c)^2 \epsilon(1-\epsilon) + 2pc \right)}{2pc(p \epsilon + c(1-\epsilon))}
+- \sqrt{\frac{\epsilon(1-\epsilon)(c-p)^2\left(\epsilon(1-\epsilon)(c-p)^4 - 4p^2 c^2\right)}{4 p^2 c^2 (p\epsilon + c(1-\epsilon))^2}} > 1.
 \]
 For the first part,
 \[
-\frac{(P + C)\left( (P-C)^2 \epsilon(1-\epsilon) + 2PC \right)}{2PC(P \epsilon + C(1-\epsilon))}\\
-> 1 + \frac{(P-C)^2 \epsilon (1-\epsilon) (P+C)}{2PC(P \epsilon + C(1-\epsilon))}.
+\frac{(p + c)\left( (p - c)^2 \epsilon(1-\epsilon) + 2p c \right)}{2pc(p \epsilon + c(1-\epsilon))}\\
+> 1 + \frac{(p-c)^2 \epsilon (1-\epsilon) (p+c)}{2pc(p \epsilon + c(1-\epsilon))}.
 \]
 To prove the roots are greater or equal to 1, we just need to show
 \[
-(P-C)^4 \epsilon^2 (1-\epsilon)^2 (P+C)^2 \ge \epsilon^2(1-\epsilon)^2(C-P)^6.
+(p-c)^4 \epsilon^2 (1-\epsilon)^2 (p+c)^2 \ge \epsilon^2(1-\epsilon)^2(c-p)^6.
 \]
 Then it is sufficient to show that
 \[
-(P+C)^2 \ge (C-P)^2,
+(p+c)^2 \ge (c-p)^2,
 \]
 which is true.
 Combined with the fact that when $q = 0$, $h(E[\bar{X}]) < 0$, we have for any $0 < q < 1$, $h(E[\bar{X}]) < 0$.
 
-The equation $h(\theta) = 0$ is a cubic polynomial, so it has at most three real roots. In addition, by calculating we know there is only one real root, while the other two are complex roots. Combined with the fact that $h(P q) > 0$, we have for any $0 < q < 1$, the only real root of the population version of ML$q$ equation is less than $E[\bar{X}] = (1-\epsilon)P + \epsilon C$.
+The equation $h(\theta) = 0$ is a cubic polynomial, so it has at most three real roots. In addition, by calculating we know there is only one real root, while the other two are complex roots. Combined with the fact that $h(p q) > 0$, we have for any $0 < q < 1$, the only real root of the population version of ML$q$ equation is less than $E[\bar{X}] = (1-\epsilon)p + \epsilon c$.
 \end{proof}
 
 \begin{lemma}[Theorem~\ref{thm:MLEvsMLqE}]
 \label{lemma:ELqlEMLEproof}
-For any $0 < q < 1$, there exists $C_0(P_{ij}, \epsilon, q) > 0$ such that under the contaminated model with $C > C_0(P_{ij}, \epsilon, q)$,
+For any $0 < q < 1$, there exists $C_0(P_{ij}, \epsilon, q) > 0$ such that under the contaminated model with $C_{ij} > C_0(P_{ij}, \epsilon, q)$,
 \[
 	\lim_{m \to \infty} \left| E[\hat{P}^{(q)}_{ij}] - P_{ij} \right| < 
     \lim_{m \to \infty} \left| E[\hat{P}^{(1)}_{ij}] - P_{ij} \right|,
@@ -766,12 +784,13 @@ C_{ij} > P_{ij} + \frac{(1-q) P_{ij}}{\epsilon} = C_0(P_{ij}, \epsilon, q).
 
 \begin{lemma}
 \label{lemma:minimumcontrast}
-The ML$q$E based on the model to be exponential distribution $\mathrm{Exp}(P)$ while the data is actually sampled from the contaminated distribution $(1-\epsilon) \mathrm{Exp}(P) + \epsilon \mathrm{Exp}(C)$ is a minimum contrast estimator.
+Assume similar setting as Lemma~\ref{lemma:PopulationLqExist}, i.e.\
+let $m$ data points sample from the contamination model $X, X_1, \cdots, X_m \stackrel{iid}{\sim} (1-\epsilon) \mathrm{Exp}(p) + \epsilon \mathrm{Exp}(c)$. The ML$q$E under the exponential distribution $\mathrm{Exp}(p)$ is a minimum contrast estimator.
 \end{lemma}
 \begin{proof}
-Consider the contaminated distribution $F(x) = (1-\epsilon) f(x; P) + \epsilon f(x; C)$, where $f(x)$ represents the pdf of exponential distribution. By Lemma~\ref{lemma:PopulationLqExist}, we know there is a one-to-one correspondence between the uncontaminated parameter $P$ and the only real solution $\theta(F)$ of the population version of ML$q$ equation,
-i.e.\ $E_F[e^{-\frac{(1-q)X}{\theta(F)}}(X - \theta(F))] = 0$. Let $r(\theta(F)) = P$.
-Then we can define $\rho(x; \theta) = \frac{f(x; r(\theta))^{1-q}}{1 - q}$, where $q \in (0, 1)$ is a constant.
+Consider the contaminated distribution $F(x) = (1-\epsilon) f(x; p) + \epsilon f(x; c)$, where $f(x)$ represents the pdf of exponential distribution. By Lemma~\ref{lemma:PopulationLqExist}, we know there is a one-to-one correspondence between the uncontaminated parameter $p$ and the only real solution $\theta(F)$ of the population version of ML$q$ equation,
+i.e.\ $E_F[exp(-(1-q)X/{\theta(F)})(X - \theta(F))] = 0$. Let $r(\theta(F)) = p$.
+Then we can define $\rho(x; \theta) = f(x; r(\theta))^{1-q}/{1 - q}$, where $q \in (0, 1)$ is a constant.
 By reparameterizing $\rho(x; \theta)$ to $\widetilde{\rho}(x; r)$ such that $\widetilde{\rho}(x; r(\theta)) = \rho(x; \theta)$, we can use the proof of Lemma~\ref{lemma:PopulationLqExist} directly to prove that $D(\theta_0, \theta) = E_{\theta_0}[\rho(X, \theta)]$ is uniquely minimized at $\theta_0$. Thus the ML$q$E is a minimum contrast estimator.
 \end{proof}
 
@@ -1721,12 +1740,13 @@ The results are direct from Theorem~\ref{thm:VarASELqproof} and Theorem~\ref{thm
 
 \subsection{$\widetilde{P}^{(q)}$ vs. $\widetilde{P}^{(1)}$}
 \label{section:MLqEASEvsMLEASE}
+
 \begin{theorem}
 \label{thm:biasL1andLq}
-For sufficiently large $C$ and any $1 \le i,j \le n$, if $m = O(n^b)$ for any $b > 0$, then
+For sufficiently large values of $\{{C}_{ij}\}$ and any $1 \le i,j \le n$, if $m = O(n^b)$ for any $b > 0$, then the estimator based on ASE of ML$q$E has smaller entry-wise asymptotic bias compared to the estimator based on ASE of MLE, i.e.\
 \[
-	\lim_{m, n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(1)})
-    > \lim_{m, n \to \infty} \mathrm{Bias}(\widetilde{P}_{ij}^{(q)})
+	\lim_{n \to \infty} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(1)})
+    > \lim_{n \to \infty} \mathrm{Bias}(\widetilde{{P}}_{ij}^{(q)})
 \]
 \end{theorem}
 \begin{proof}
@@ -1735,15 +1755,17 @@ Direct result from Theorem~\ref{thm:MLEvsMLqE}, Theorem~\ref{thm:MLEvsMLEASE} an
 
 \begin{theorem}
 \label{thm:varianceL1andLq}
-For sufficiently large $C$ and any $1 \le i,j \le n$, if $m = O(n (\log n)^{-3})$, then
+For any $1 \le i,j \le n$, if $m = O(n^b)$ for any $b > 0$, then
 \[
-	\lim_{m, n \to \infty} \mathrm{Var}(\widetilde{P}_{ij}^{(1)})
-    = \lim_{m, n \to \infty} \mathrm{Var}(\widetilde{P}_{ij}^{(q)}) = 0.
+	\lim_{n \to \infty} \mathrm{Var}(\widetilde{{P}}_{ij}^{(1)})
+    = \lim_{n \to \infty} \mathrm{Var}(\widetilde{{P}}_{ij}^{(q)}) = 0.
 \]
 \end{theorem}
 \begin{proof}
 Direct result from Theorem~\ref{thm:MLEvsMLEASE} and Theorem~\ref{thm:MLqEvsMLqEASE}.
 \end{proof}
+
+
 
 
 

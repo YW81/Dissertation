@@ -33,6 +33,8 @@ for (iData in 1:length(dataNameVec)) {
   evalVec = ase(Abar, dMax, isSVD)[[1]]
   dHat = getElbows(evalVec, n=nElb, plot=F)[[nElb]]
   
+  # print(dHat)
+  
   A.ase = ase(diag_aug(Abar), dHat, isSVD)
   if (dHat == 1) {
     Ahat = A.ase[[1]] * A.ase[[3]] %*% t(A.ase[[2]])

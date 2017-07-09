@@ -119,7 +119,7 @@ Consider a LPM with link function $\kappa(x, y) = x^{\top} K y$ where $K \in \{-
 Unlike RDPG, this LPM can be applied to the situation where the low-rank probability matrix $P$ is indefinite. For example $P \in [0, 1]^{n \times n}$ with $d$ non-zero eigenvalues $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_{d'} > 0 > \lambda_{d'+1} \ge \dots \ge \lambda_d$.
 \end{example}
 
-The LPM in Example~\ref{example:LPM} above is a natural extension of RDPG to the non-PSD case. We will see later that it motivates another estimator analogous to the one we are going to propose. Details are discussed in Remark~\ref{remark:nonPSD}. \RT{TODO}
+%The LPM in Example~\ref{example:LPM} above is a natural extension of RDPG to the non-PSD case. We will see later that it motivates another estimator analogous to the one we are going to propose. Details are discussed in Remark~\ref{remark:nonPSD}.
 
 As one may notice, RDPG is non-identifiable. For any orthonormal matrix $W \in \mathbb{R}^{d \times d}$, the rotated latent positions $X W$ is equivalent to the original $X$ since $P = X X^{\top} = (XW) (XW)^{\top}$. In later sections, we will sometimes consider the equivalent class of latent positions up to rotations instead.
 
@@ -233,7 +233,7 @@ Note that the graphs considered in this paper are undirected without self-loops,
 \subsection{Weighted Random Dot Product Graph}
 \label{sec:WRDPG}
 
-As discussed in Section~\ref{sec:RDPG}, the connectivity between two vertices in a graph generally depends on some hidden properties of the corresponding vertices. Such property is well captured by LPM as well as RDPG, which is a special case of LPM. In this section, we generalize RDPG to a weighted version so that it can model weighted graphs. 
+As discussed in Section~\ref{sec:RDPG}, vertices are selective about their adjacencies in graphs. A vertex may be frequently adjacent to one group of vertices but rarely adjacent to the other group of vertices. Such property is well captured by LPM as well as RDPG, which is a special case of LPM. In this section, we generalize RDPG to a weighted version so that it can model weighted graphs. 
 
 \begin{definition}[Weighted Random Dot Product Graph]
 Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. The {\em{weighted random dot product graph (WRDPG)}} with respect to $\mathcal{F}$ is defined via consideration of latent position matrix $X \in \mathbb{R}^{n \times d}$ such that $X = [X_1, X_2, \dotsc, X_n]^{\top}$, where $X_i \in \mathbb{R}^d$ for all $i \in [n]$. The matrix $X$ is random and satisfies $\mathbb{P}\left[ X_i^{\top} X_j \in \Theta \right] = 1$ for all $i, j \in [n]$. Conditioned on $X$, the entries of the adjacency matrix $A$ are independent and $A_{ij}$ is a random variable following distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = X_i^{\top} X_j $ for all $i < j \in [n]$.
@@ -254,7 +254,7 @@ After such extension, WRDPG inherits some properties from RDPG naturally, for ex
 Consider a collection of one-parameter distributions $\mathcal{F} = \{ f_{\theta}, \theta \in \Theta \subset \mathbb{R} \}$. A $K$-block {\em{weighted stochastic blockmodel (WSBM)}} with respect to $\mathcal{F}$ is defined as follows: Let block probability matrix be $B \in \Theta^{K \times K}$, and let the vector of block memberships be $\tau \in [K]^n$, where for each $i \in [n]$, $\tau_i = k$ means vertex $i$ is a member of block $k$. Then $A_{ij}$ follows distribution $f_{\theta} \in \mathcal{F}$ with parameter $\theta = B_{ij}$ independent of others for $i, j \in [n]$ and $i < j$.
 \end{definition}
 
-WSBM can be defined in a similar way in the scenario when the block probability matrix $B$ and block membership vector $\tau$ are random. As mentioned in Section~\ref{sec:SBM}, all analysis for unweighted graphs is based on RDPG setting. Likewise, in this section we will represent WSBM as WRDPG. Because of the structure of WRDPG, in order to consider WSBM as a WRDPG, the block probability matrix $B$ is assumed be positive semidefinite. From now on, we will denote the sub-model of WSBM with positive semi-definite $B$ as the WSBM.
+WSBM can be defined in a similar way in the scenario when the block probability matrix $B$ and block membership vector $\tau$ are random. As mentioned in Section~\ref{sec:SBM}, all analysis for unweighted graphs is based on RDPG setting. Likewise, in this section we will represent WSBM as WRDPG. Because of the structure of WRDPG, in order to consider WSBM as a WRDPG, the block probability matrix $B$ is assumed be positive semidefinite. Henceforth, with slight abuse of terminology, we will denote the sub-model of WSBM with positive semi-definite $B$ as simply the WSBM.
 
 \begin{definition} [WSBM as WRDPG]
 \label{def:SBM_RDPG}

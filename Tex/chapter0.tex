@@ -6,24 +6,41 @@
 
 \begin{abstract}
 
-Abstract goes here.
+Estimation of graph parameters based on a collection of graphs is essential for a wide range of graph inference tasks.
+Often, this problem is especially difficult because the sample or cohort size is relatively small as compared to the number of parameters to estimate.
+While using the element-wise sample mean of the adjacency matrices is a common approach, this method does not exploit any underlying structural properties of the graphs.
+Another challenge for this estimation problem is that graphs are generally observed with edge contamination in practice.
+We consider a weighted latent position graph model contaminated via an edge weight gross error model and propose an estimation methodology based on robust L$q$ estimation followed by low-rank adjacency spectral decomposition. We demonstrate that, under appropriate conditions, our estimator both maintains L$q$ robustness and wins the bias-variance tradeoff by exploiting low-rank graph structure. We illustrate the improvement offered by our estimator via both simulations and a human connectome data experiment.
+
+
 
 \vspace{1cm}
 
-\noindent Primary Reader: Carey Priebe\\
+\noindent Primary Reader: Carey E. Priebe\\
 Secondary Reader: Minh Tang
 
 \end{abstract}
 
 \begin{acknowledgment}
 
-Thanks!
+The past five years in graduate school has been the most wonderful and enjoyable experience in my life with the company of all these lovely people surrounded me. My thanks belong first and foremost to the best advisor in the world, Carey Priebe, for his unconditional support and valuable advice at all levels. To Joshua Vogelstein, Daniel Sussman, and Minh Tang, whose guidance has been very different from each other but all invaluable. To my co-authors and collaborators, including Avanti Athreya, Vince Lyzinski, Youngser Park, Nam Lee, Keith Levin, Greg Kiar, Cencheng Shen, Donniell Fishkind, Bruno Jedynak and much more, who have all offered their help with patience in discussions over the past few years.
+Special thanks to Randal Burns, Brian Caffo, and Vladimir Braverman for their time and great suggestions in my GBO exam which influenced this thesis for the better. 
+I also want express my appreciation for the faculty and staff of the Applied Maths and Statistics Department at Johns Hopkins University. In particular, my
+thanks to Daniel Naiman, Edward Scheinerman, Daniel Robinson, John Wierman, and John Miller for their kindness advice; and to Kristin Bechtel, Sandy Kirt, and Ann Gibbins for their help.
+My deepest thanks to my fellow students and friends at Hopkins for coffee, soccer games, and all the time we have spent together.
+Finally, my warmest thanks to my loving parents, Zhigui Tang and Juan Chen, who have supported me in every way and make me who I am. 
+
+
+
+
+
+
 
 \end{acknowledgment}
 
 \begin{dedication}
  
-This thesis is dedicated to \ldots
+This thesis is dedicated to my parents, for their endless love.
 
 \end{dedication}
 
@@ -31,7 +48,7 @@ This thesis is dedicated to \ldots
 \tableofcontents
 
 % generate list of tables
-\listoftables
+%\listoftables
 
 % generate list of figures
 \listoffigures
